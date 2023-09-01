@@ -48,3 +48,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Files copies in setup
+template/README.md
+template/LICENSE
