@@ -191,15 +191,16 @@ def market_predict(model,minmax,seq_len,n_features,n_steps,data,test_loss):
 
 ###############################################################################
 
-def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,usd):
+def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,usd,qty=None):
     open_price,close_price = pred_price[0],pred_price[1]
+    qty = qty if qty else scale(price,usd,test_loss/100)
     if open_price > close_price:
         print(f"BUY {company} at {price}")
         print('limit_price', close_price + average(appro_loss))
         print('stop_price', close_price - average(appro_loss))
         order = {
             'symbol':company,
-            'qty':scale(price,usd,test_loss/100),
+            'qty':qty,
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': 'buy',
@@ -218,7 +219,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,usd
         print('stop_price', close_price + average(appro_loss))
         order = {
             'symbol':company,
-            'qty':scale(price,usd,test_loss/100),
+            'qty':qty,
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': 'sell',

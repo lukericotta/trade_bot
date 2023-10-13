@@ -23,8 +23,8 @@ def buy():
     # Submit a market order to buy 1 share of Apple at market price
     api.submit_order(
         symbol='AAPL',
-        qty=.05,
-        side='sell',
+        qty=1,
+        side='buy',
         type='market',
         time_in_force='day'
     )
@@ -33,12 +33,12 @@ def stop_limit_buy():
     # Submit a market order to buy 1 share of Apple at market price
     api.submit_order(
         symbol='AAPL',
-        qty=.1,
+        qty=1,
         type='stop_limit',
-        time_in_force='cls',
+        time_in_force='gtc',
         side='buy',
-        limit_price = 27946.3 + 1,
-        stop_price = 27946.3 - 1
+        limit_price = 175,
+        stop_price = 160
     )
 
 
@@ -54,6 +54,6 @@ def stop_limit_sell():
         stop_price = 90.04
     )
 #sell()
-#buy()
+buy()
 stop_limit_buy()
 #stop_limit_sell()

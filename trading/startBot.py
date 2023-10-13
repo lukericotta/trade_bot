@@ -9,6 +9,7 @@ Created on Sat Oct  7 12:19:04 2023
 from apisetup import *
 from bot import *
 from datetime import datetime
+import datetime, pytz, holidays
 import alpaca_trade_api as tradeapi
 import pandas as pd
 import requests
@@ -19,11 +20,32 @@ CRYPTO = False
 LOSS = 'mse'
 OPT='adam'
 SEQ_LEN = 12
+TIME_IN_FORCE = 'gtc'
 TO_DROP = ['BRK.B', 'BF.B']
 USD = 100
 YEARS = 5
 DATA_LEN = 365*YEARS
 EPOCHS = round(DATA_LEN/SEQ_LEN)*YEARS
+
+import datetime, pytz, holidays
+
+def afterHours():
+    tz = pytz.timezone('US/Eastern')
+    us_holidays = holidays.US()
+    openTime = datetime.time(hour = 9, minute = 30, second = 0)
+    closeTime = datetime.time(hour = 16, minute = 0, second = 0)
+    now = datetime.datetime.now(tz)
+    # If a holiday
+    if now.strftime('%Y-%m-%d') in us_holidays:
+        return True
+    # If before 0930 or after 1600
+    if (now.time() < openTime) or (now.time() > closeTime):
+        return True
+    # If it's a weekend
+    if now.date().weekday() > 4:
+        return True
+    
+    return False    
 
 def getCrypto():
     url = "https://api.livecoinwatch.com/coins/list"
@@ -120,25 +142,14 @@ def train(sym, data_len, seq_len):
 
 def main():
     crypto = False
-    while True:
-        if datetime.utcnow().hour < 21 and datetime.utcnow().hour > 12:
-            crypto = not crypto
-        else:
-            crypto = True
+    while not afterHours():
         
-        if crypto and CRYPTO:
-            df = getCrypto()
-            time_in_force = 'gtc'
-            usd = USD/10
-        else:
-            usd = USD
-            time_in_force = 'gtc'
-            table=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
-            df = table[0]
-            df.to_csv('S&P500-Info.csv')
-            df.to_csv("S&P500-Symbols.csv", columns=['Symbol'])
-            for drop in TO_DROP:
-                df = df.drop(df[df['Symbol'] == drop].index)
+        table=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+        df = table[0]
+        df.to_csv('S&P500-Info.csv')
+        df.to_csv("S&P500-Symbols.csv", columns=['Symbol'])
+        for drop in TO_DROP:
+            df = df.drop(df[df['Symbol'] == drop].index)
                     
         my_orders = getOrders()
         for symbol in list(df.Symbol):
@@ -149,12 +160,12 @@ def main():
             model, test_loss, minmax, n_features, n_steps = train(symbol, DATA_LEN, SEQ_LEN)
             X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, DATA_LEN, SEQ_LEN)
             pred,appro_loss = market_predict(model,minmax,SEQ_LEN,n_features,n_steps,X,test_loss)
-            create_order(pred,symbol.replace('-',''),test_loss,appro_loss,time_in_force,last_price,usd)
             open_orders = [o for o in api.list_orders(status='open') if o.symbol == symbol]
-            except:
-                continue
+            for order in open_orders:
+                api.cancel_order(order.id)
+            create_order(pred,symbol.replace('-',''),test_loss,appro_loss,TIME_IN_FORCE,last_price,USD,1)
             
-    ap.cancel_all_orders()
+    api.cancel_all_orders()
             
 if __name__ == "__main__":
     main()
