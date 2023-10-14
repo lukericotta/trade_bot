@@ -12,6 +12,7 @@ from datetime import datetime
 import datetime, pytz, holidays
 import alpaca_trade_api as tradeapi
 import pandas as pd
+import random
 import requests
 import time
 
@@ -142,7 +143,9 @@ def train(sym, data_len, seq_len):
 
 def main():
     crypto = False
+    api.cancel_all_orders()
     while not afterHours():
+        my_orders = getOrders()
         
         table=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
         df = table[0]
@@ -150,9 +153,10 @@ def main():
         df.to_csv("S&P500-Symbols.csv", columns=['Symbol'])
         for drop in TO_DROP:
             df = df.drop(df[df['Symbol'] == drop].index)
-                    
-        my_orders = getOrders()
-        for symbol in list(df.Symbol):
+            
+        symbols_to_trade = [pos.symbol for pos in trading_client.get_all_positions()] + list(df.Symbol)
+        random.shuffle(symbols_to_trade)
+        for symbol in symbols_to_trade:
             ticker_yahoo = yf.Ticker(symbol)
             data = ticker_yahoo.history()
             last_quote = data['Close'].iloc[-1]

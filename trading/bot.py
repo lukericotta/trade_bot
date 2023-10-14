@@ -34,10 +34,10 @@ from apisetup import *
 def average(lst):
     return sum(lst) / len(lst) 
 
+
 def scale(price,total,loss):
     return loss*total/price
 
-###############################################################################
 
 def data_setup(symbol,data_len,seq_len):
     end = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -69,12 +69,6 @@ def data_setup(symbol,data_len,seq_len):
     return X,array(true_y),n_features,minmax,n_steps,close,open_,high,low,close[-1]
 
 
-###############################################################################
-
-#(n_seq,1, n_steps, n_features)
-
-###############################################################################
-
 def split_sequences(sequences, n_steps):
         X, y = list(), list()
         for i in range(len(sequences)):
@@ -86,7 +80,6 @@ def split_sequences(sequences, n_steps):
             y.append(seq_y)
         return array(X), array(y)
 
-###############################################################################
 
 def normalize_data(dataset):
         cols = dataset.columns.tolist()
