@@ -3,8 +3,8 @@ BoptimalTrader
 """
 
 from alpaca.trading.client import TradingClient
-from botFunctions import *
-from botTrain import *
+from .botFunctions import *
+from .botTrain import *
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
