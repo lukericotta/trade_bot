@@ -16,6 +16,8 @@ readme = SCRIPT_PATH.joinpath('README.md').read_text()
 bb_license = SCRIPT_PATH.joinpath('LICENSE').read_text()
 shutil.copyfile('README.md', 'bot/README.md')
 shutil.copyfile('LICENSE', 'bot/LICENSE')
+shutil.copyfile('botFunctions.py', 'bot/cli/botFunctions.py')
+shutil.copyfile('botTrain.py', 'bot/cli/botTrain.py')
 
 setup(
   name='bot',
