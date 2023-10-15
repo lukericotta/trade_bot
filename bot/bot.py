@@ -100,16 +100,19 @@ class BoptimalTrader():
             symbols_to_trade = [pos.symbol for pos in self.trading_client.get_all_positions()] + list(df.Symbol)
             random.shuffle(symbols_to_trade)
             for symbol in symbols_to_trade:
-                ticker_yahoo = yf.Ticker(symbol)
-                data = ticker_yahoo.history()
-                last_quote = data['Close'].iloc[-1]
-                print(symbol, last_quote)
-                model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
-                X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
-                pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
-                open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
-                for order in open_orders:
-                    self.api.cancel_order(order.id)
-                create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS)
-                
+                try:
+                    ticker_yahoo = yf.Ticker(symbol)
+                    data = ticker_yahoo.history()
+                    last_quote = data['Close'].iloc[-1]
+                    print(symbol, last_quote)
+                    model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
+                    X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
+                    pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
+                    open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
+                    for order in open_orders:
+                        self.api.cancel_order(order.id)
+                    create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS)
+                except:
+                    print(f"Execution of trade with {symbol} failed for unknown reason")
+                    
         self.api.cancel_all_orders()
