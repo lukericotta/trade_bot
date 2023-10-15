@@ -48,6 +48,13 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Downloaded csv files
+*.csv
+
 # Files copies in setup
-template/README.md
-template/LICENSE
+bot/README.md
+bot/LICENSE
+bot/cli/__init__.py
+bot/cli/template.py
+bot.egg-info
+train
