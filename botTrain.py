@@ -212,7 +212,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
         print('stop_price', close_price - average(appro_loss))
         order = {
             'symbol':company,
-            'qty':round(20*(test_loss/100)),
+            'qty':1,
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': 'buy',
@@ -231,7 +231,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
         print('stop_price', close_price + average(appro_loss))
         order = {
             'symbol':company,
-            'qty':round(20*(test_loss/100)),
+            'qty':1,
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': 'sell',
