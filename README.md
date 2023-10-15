@@ -47,7 +47,12 @@ pip install -e .
 
 ## Usage
 
-### Python API
+### Python API with stock trading (S&P 500)
+```bash
+bot api_configs.yaml trading/train_configs.yaml
+```
+
+### Python API with crypto trading (see train_config.yaml)
 ```bash
 bot api_configs.yaml trading/train_configs.yaml --crypto
 ```
