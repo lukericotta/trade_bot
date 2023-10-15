@@ -1,0 +1,28 @@
+Available:
+    - AAVE
+    - AVAX
+    - BAT
+    - BCH
+    - BTC
+    - CRV
+    - DOT
+    - ETH
+    - GRT
+    - LINK
+    - LTC
+    - MKR
+    - SHIB
+    - UNI
+    - USDC
+    - USDT
+    - XTZ
+Loss: mse
+Optimizer: adam
+SeqLen: 12
+TimeInForce: gtc
+ToDrop:
+    - BRK.B
+    - BF.B
+Years: 5
+DataLen: 2000
+Epochs: 1000

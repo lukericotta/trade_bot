@@ -6,30 +6,31 @@ Created on Wed Oct  4 17:58:44 2023
 @author: lucianoricotta
 """
 
-from numpy import array
-from numpy import hstack
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
 from keras import callbacks
-from sklearn.model_selection import train_test_split
 from keras.layers import Flatten
 from keras.layers import TimeDistributed
 from keras.layers.convolutional import Conv1D
 from keras.layers.convolutional import MaxPooling1D
-from IPython.display import clear_output
-import datetime
-import statistics
-import time 
-import os
-import json
-import yfinance as yf
 from keras.models import model_from_json
-import requests
 from keras.models import load_model
+from IPython.display import clear_output
 from matplotlib import pyplot as plt
-
-from apisetup import *
+from numpy import array
+from numpy import hstack
+from sklearn.model_selection import train_test_split
+import datetime
+import json
+import os
+import pandas as pd
+import random
+import requests
+import statistics
+import time
+import yaml
+import yfinance as yf
 
 def average(lst):
     return sum(lst) / len(lst) 

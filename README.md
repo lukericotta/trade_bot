@@ -1,4 +1,4 @@
-# Template #
+# BoptimalTrader #
 
 This package provides a python library with commonly used classes and functions.
 
@@ -6,7 +6,7 @@ This package provides a python library with commonly used classes and functions.
 
 **Python Application Programming Interface (API)**
 
-* Template
+* BoptimalTrader
 
 ## Future Capabilities ##
 
@@ -19,9 +19,16 @@ This package provides a python library with commonly used classes and functions.
 To install the python toolbox, it is recommended to first install conda dependencies with the following command.
 
 ```bash
-conda create -y -n template python=3.10
-conda acticate template
+conda create -y -n trading_env python=3.10
+conda activate trading_env
 conda env update --file requirements.yaml
+```
+
+To install required python packages required by the bot.
+
+```bash
+pip install alpaca-py
+pip install alpaca-trade-api
 ```
 
 ### For Users
@@ -41,3 +48,6 @@ pip install -e .
 ## Usage
 
 ### Python API
+```bash
+bot api_configs.yaml trading/train_configs.yaml --crypto
+```

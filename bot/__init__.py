@@ -1,7 +1,7 @@
 """
-Template
+BoptimalTrader
 
-This module provides control capabilities for Template.
+This module provides control capabilities for BoptimalTrader.
 """
 
 
@@ -9,7 +9,7 @@ __author__ = "Luciano Ricotta"
 __email__ = "lucianoricotta1@gmail.com"
 __all__ = [
   '__version__',
-  'Template']
+  'BoptimalTrader']
 
 from ._version import __version__
-from .template import Template
+from .bot import BoptimalTrader

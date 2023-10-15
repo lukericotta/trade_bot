@@ -6,38 +6,43 @@ Created on Wed Oct  4 17:58:44 2023
 @author: lucianoricotta
 """
 
-from numpy import array
-from numpy import hstack
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
 from keras import callbacks
-from sklearn.model_selection import train_test_split
 from keras.layers import Flatten
 from keras.layers import TimeDistributed
 from keras.layers.convolutional import Conv1D
 from keras.layers.convolutional import MaxPooling1D
-from IPython.display import clear_output
-import datetime
-import statistics
-import time 
-import os
-import json
-import yfinance as yf
 from keras.models import model_from_json
-import requests
 from keras.models import load_model
+from IPython.display import clear_output
 from matplotlib import pyplot as plt
+from numpy import array
+from numpy import hstack
+from sklearn.model_selection import train_test_split
+import datetime
+import json
+import os
+import pandas as pd
+import random
+import requests
+import statistics
+import time
+import yaml
+import yfinance as yf
 
-from apisetup import *
+###############################################################################
 
 def average(lst):
     return sum(lst) / len(lst) 
 
+###############################################################################
 
 def scale(price,total,loss):
     return loss*total/price
 
+###############################################################################
 
 def data_setup(symbol,data_len,seq_len):
     end = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -68,6 +73,7 @@ def data_setup(symbol,data_len,seq_len):
         true_y.append([y[i][0],y[i][1]])
     return X,array(true_y),n_features,minmax,n_steps,close,open_,high,low,close[-1]
 
+###############################################################################
 
 def split_sequences(sequences, n_steps):
         X, y = list(), list()
@@ -80,6 +86,7 @@ def split_sequences(sequences, n_steps):
             y.append(seq_y)
         return array(X), array(y)
 
+###############################################################################
 
 def normalize_data(dataset):
         cols = dataset.columns.tolist()
@@ -127,6 +134,11 @@ def initialize_network(n_steps,n_features,optimizer):
 
 def train_model(X_train,y_train,model,epochs):
     dirx = 'train'
+    # Check whether the specified path exists or not
+    isExist = os.path.exists(dirx)
+    if not isExist:
+       # Create a new directory because it does not exist
+       os.makedirs(dirx)
     cwd = os.getcwd()
     os.chdir(dirx)
     h5='Stocks'+'_best_model'+'.h5'
@@ -137,7 +149,7 @@ def train_model(X_train,y_train,model,epochs):
     model_json = model.to_json()
     with open(json, "w") as json_file:
         json_file.write(model_json)
-    history = model.fit(X_train, y_train, epochs=epochs, batch_size=len(X_train)//4, verbose=2,validation_split = 0.3, callbacks = callback)
+    history = model.fit(X_train, y_train, epochs=epochs, batch_size=len(X_train)//4, verbose=0,validation_split = 0.3, callbacks = callback)
     os.chdir(cwd)
     return history
 
@@ -145,6 +157,11 @@ def train_model(X_train,y_train,model,epochs):
 
 def load_keras_model(dataset,model,loss,optimizer):
     dirx = 'train'
+    # Check whether the specified path exists or not
+    isExist = os.path.exists(dirx)
+    if not isExist:
+       # Create a new directory because it does not exist
+       os.makedirs(dirx)
     cwd = os.getcwd()
     os.chdir(dirx)
     json_file = open(dataset+'_best_model'+'.json', 'r')
@@ -155,6 +172,9 @@ def load_keras_model(dataset,model,loss,optimizer):
     model.load_weights(dataset+'_best_model'+'.h5')
     os.chdir(cwd)
     return model
+
+###############################################################################
+
 def evaluation(exe_time,X_test, y_test,X_train, y_train,history,model,optimizer,loss):
     model = load_keras_model('Stocks',model,loss,optimizer)
     test_loss = model.evaluate(X_test, y_test, verbose=0)
@@ -184,7 +204,7 @@ def market_predict(model,minmax,seq_len,n_features,n_steps,data,test_loss):
 
 ###############################################################################
 
-def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,qty):
+def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers):
     open_price,close_price = pred_price[0],pred_price[1]
     if open_price > close_price:
         print(f"BUY {company} at {price}")
@@ -192,7 +212,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,qty
         print('stop_price', close_price - average(appro_loss))
         order = {
             'symbol':company,
-            'qty':qty,
+            'qty':round(20*(test_loss/100)),
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': 'buy',
@@ -211,7 +231,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,qty
         print('stop_price', close_price + average(appro_loss))
         order = {
             'symbol':company,
-            'qty':qty,
+            'qty':round(20*(test_loss/100)),
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': 'sell',
@@ -228,8 +248,8 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,qty
         print(f'Cannot place stop limit order where open_price {open_price} = close_price {close_price}')
         return
 
-    print(f"Executing trade for ${usd}: {scale(price,usd,test_loss/100)} total shares")
-    r = requests.post(ORDERS_URL, json = order,headers = HEADERS)
+    print(f"Executing trade...")
+    r = requests.post(orders_url, json = order,headers = headers)
     print(r.content)
     
 ###############################################################################
