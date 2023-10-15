@@ -19,7 +19,7 @@ This package provides a python library with commonly used classes and functions.
 To install the python toolbox, it is recommended to first install conda dependencies with the following command.
 
 ```bash
-conda create -y -n trading_env python=3.10
+conda create -y -n trading_env python=3.8
 conda activate trading_env
 conda env update --file requirements.yaml
 ```
