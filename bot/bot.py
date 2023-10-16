@@ -83,6 +83,11 @@ class BoptimalTrader():
         return model, test_loss, minmax, n_features, n_steps
 
     def start(self):
+
+        # First wait until not after hours
+        while afterHours():
+            continue
+
         self.api.cancel_all_orders()
         while not afterHours() or self.crypto:
             my_orders = getOrders(self.api)
@@ -112,6 +117,9 @@ class BoptimalTrader():
                     for order in open_orders:
                         self.api.cancel_order(order.id)
                     create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS)
+                except KeyboardInterrupt:
+                    print("Trading stopped.")
+                    return
                 except:
                     print(f"Execution of trade with {symbol} failed for unknown reason")
                     
