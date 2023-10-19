@@ -85,7 +85,7 @@ class BoptimalTrader():
     def start(self):
 
         # First wait until not after hours
-        while afterHours():
+        while afterHours() and not self.crypto:
             continue
 
         self.api.cancel_all_orders()

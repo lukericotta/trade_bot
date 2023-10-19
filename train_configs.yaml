@@ -24,5 +24,5 @@ ToDrop:
     - BRK.B
     - BF.B
 Years: 5
-DataLen: 2000
-Epochs: 1000
+DataLen: 2500
+Epochs: 5000
