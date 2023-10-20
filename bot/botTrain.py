@@ -46,7 +46,7 @@ def scale(price,total,loss):
 
 def data_setup(symbol,data_len,seq_len):
     end = datetime.datetime.today().strftime('%Y-%m-%d')
-    start = datetime.datetime.strptime(end, '%Y-%m-%d') - datetime.timedelta(days=(data_len/0.463))
+    start = datetime.datetime.strptime(end, '%Y-%m-%d') - datetime.timedelta(days=(data_len))
     orig_dataset = yf.download(symbol,start,end)
     close = orig_dataset['Close'].values
     open_ = orig_dataset['Open'].values
@@ -206,16 +206,30 @@ def market_predict(model,minmax,seq_len,n_features,n_steps,data,test_loss):
 
 def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers):
     open_price,close_price = pred_price[0],pred_price[1]
-    if open_price < close_price:
+    print(f"Predicted open price: {open_price}")
+    print(f"Predicted close price: {close_price}")
+    print("appro loss", appro_loss)
+    
+    if open_price > close_price:
+        side = 'sell'
+        side_matrix = [1, 0, 0]
+    elif open_price < close_price:
+        side = 'buy'
+        side_matrix = [0, 1, 0]    
+    else:
+        print(f'Cannot place stop limit order where open_price {open_price} = close_price {close_price}')
+        side_matrix = [0, 0, 1]
+        
+    if side == 'buy':
         print(f"BUY {company} at {price}")
         print('limit_price', close_price + appro_loss[1])
         print('stop_price', close_price - appro_loss[1])
         order = {
             'symbol':company,
-            'qty':round(test_loss/100),
+            'qty':round(20*(test_loss/100)),
             'type':'stop_limit',
             'time_in_force': time_in_force,
-            'side': 'buy',
+            'side': side,
             'limit_price': round(close_price + appro_loss[1],2),
             'stop_price': round(close_price - appro_loss[1],2),
             'take_profit': {
@@ -225,16 +239,16 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
               'stop_price': round(close_price - appro_loss[1],2)
             }
                 }
-    elif open_price > close_price:
+    elif side == 'sell':
         print(f"SELL {company} at {price}")
         print('limit_price', close_price - appro_loss[1])
         print('stop_price', close_price + appro_loss[1])
         order = {
             'symbol':company,
-            'qty':round(test_loss/100),
+            'qty':round(20*(test_loss/100)),
             'type':'stop_limit',
             'time_in_force': time_in_force,
-            'side': 'sell',
+            'side': side,
             'limit_price': round(close_price - appro_loss[1],2),
             'stop_price': round(close_price + appro_loss[1],2),
             'take_profit': {
@@ -244,13 +258,12 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
               'stop_price': round(close_price + appro_loss[1],2)
             }
                 }
-    else:
-        print(f'Cannot place stop limit order where open_price {open_price} = close_price {close_price}')
-        return
 
     print(f"Executing trade...")
     r = requests.post(orders_url, json = order,headers = headers)
     print(r.content)
+    
+    return side_matrix
     
 ###############################################################################
 

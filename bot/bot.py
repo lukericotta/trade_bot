@@ -19,6 +19,7 @@ from IPython.display import clear_output
 from matplotlib import pyplot as plt
 from numpy import array
 from numpy import hstack
+from operator import add
 from sklearn.model_selection import train_test_split
 import alpaca_trade_api as tradeapi
 import datetime
@@ -42,10 +43,11 @@ class BoptimalTrader():
       string: training yaml configuration file
       bool: crypto
     """
-    def __init__(self, api_config, training_config, crypto):
+    def __init__(self, api_config, training_config, crypto, continuous):
       self.api_config = self.loadYaml(api_config)
       self.training_config = self.loadYaml(training_config)
       self.crypto = crypto
+      self.continuous = continuous
       
       
     def loadYaml(self, path):
@@ -83,13 +85,14 @@ class BoptimalTrader():
         return model, test_loss, minmax, n_features, n_steps
 
     def start(self):
+        side_count= [0, 0, 0]
 
         # First wait until not after hours
-        while afterHours() and not self.crypto:
+        while afterHours() and self.continuous and not self.crypto:
             continue
 
         self.api.cancel_all_orders()
-        while not afterHours() or self.crypto:
+        while True:
             my_orders = getOrders(self.api)
             
             if self.crypto:
@@ -116,11 +119,23 @@ class BoptimalTrader():
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
                         self.api.cancel_order(order.id)
-                    create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS)
+                    side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS)
+                    side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
                     print("Trading stopped.")
-                    return
+                    break
                 except:
                     print(f"Execution of trade with {symbol} failed for unknown reason")
-                    
-        self.api.cancel_all_orders()
+                finally:
+                    if afterHours() and self.continuous:
+                        break
+            else:
+                if self.continuous:
+                    continue
+            break
+        
+        if self.continuous:            
+            self.api.cancel_all_orders()
+            
+        print("Counts for buy, sell, hold: ", side_count)    
+
