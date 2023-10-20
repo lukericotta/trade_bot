@@ -204,8 +204,10 @@ def market_predict(model,minmax,seq_len,n_features,n_steps,data,test_loss):
 
 ###############################################################################
 
-def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers):
+def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers,qty,crypto):
     open_price,close_price = pred_price[0],pred_price[1]
+    if crypto:
+        appro_loss += price*qty*.0025
     print(f"Predicted open price: {open_price}")
     print(f"Predicted close price: {close_price}")
     print("appro loss", appro_loss)
@@ -226,7 +228,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
         print('stop_price', close_price - appro_loss[1])
         order = {
             'symbol':company,
-            'qty':round(20*(test_loss/100)),
+            'qty':round(qty*(test_loss/100)),
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': side,
@@ -245,7 +247,7 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
         print('stop_price', close_price + appro_loss[1])
         order = {
             'symbol':company,
-            'qty':round(20*(test_loss/100)),
+            'qty':round(qty*(test_loss/100)),
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': side,

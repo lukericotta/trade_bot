@@ -30,6 +30,28 @@ def afterHours():
     
     return False    
 
+def close_all_positions_end_of_day():
+    #  First, check if the market is currently open. No point in checking if closed.
+    if api.get_clock().is_open:
+        #  Get the current time (New York time)
+        time_now = dt.datetime.now(pytz.timezone('US/Eastern'))
+
+        #  Calculate the timestamp for 5 mins before close (15:55) today.
+        five_mins_before_end_of_day = pd.Timestamp(year=time_now.year, month=time_now.month, day=time_now.day, hour=15,
+                                                   minute=55, second=00, tz='US/Eastern')
+
+        #  If the current time is the same as (or after) 15:55, close all positions.
+        if time_now.isoformat() >= five_mins_before_end_of_day.isoformat():
+            print('Closing all positions...')
+            api.close_all_positions()
+            return True
+        else:
+            print('Not yet 3:55pm!')
+    else:
+        print('Market currently closed!')
+        
+    return False
+        
 def getCrypto(available):
     url = "https://api.livecoinwatch.com/coins/list"
       

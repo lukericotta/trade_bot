@@ -72,7 +72,7 @@ class BoptimalTrader():
         self.TO_DROP = self.training_config['ToDrop']
         self.DATA_LEN = self.training_config['DataLen']
         self.EPOCHS = self.training_config['Epochs']
-        
+        self.QTY = self.training_config['Quantity']
 
     def train(self, sym, data_len, seq_len):
         X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(sym, data_len, seq_len)
@@ -119,7 +119,7 @@ class BoptimalTrader():
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
                         self.api.cancel_order(order.id)
-                    side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS)
+                    side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
                     side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
                     print("Trading stopped.")
@@ -127,7 +127,9 @@ class BoptimalTrader():
                 except:
                     print(f"Execution of trade with {symbol} failed for unknown reason")
                 finally:
-                    if afterHours() and self.continuous:
+                    if afterHours() and not self.crypto:
+                        break
+                    if not self.crypto and close_all_positions_end_of_day():
                         break
             else:
                 if self.continuous:
