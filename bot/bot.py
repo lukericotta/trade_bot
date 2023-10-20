@@ -110,6 +110,10 @@ class BoptimalTrader():
                     data = ticker_yahoo.history()
                     last_quote = data['Close'].iloc[-1]
                     print(symbol, last_quote)
+                    account = api.get_account()
+                    if account.buying_power < last_quote:
+                        self.api.cancel_all_orders()
+                        self.api.close_all_positions()
                     model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
                     X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
                     pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
