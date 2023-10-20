@@ -110,8 +110,8 @@ class BoptimalTrader():
                     data = ticker_yahoo.history()
                     last_quote = data['Close'].iloc[-1]
                     print(symbol, last_quote)
-                    account = api.get_account()
-                    if account.buying_power < last_quote:
+                    account = self.api.get_account()
+                    if float(account.buying_power) < float(last_quote):
                         self.api.cancel_all_orders()
                         self.api.close_all_positions()
                     model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
@@ -125,8 +125,9 @@ class BoptimalTrader():
                 except KeyboardInterrupt:
                     print("Trading stopped.")
                     break
-                except:
+                except Exception as e:
                     print(f"Execution of trade with {symbol} failed for unknown reason")
+                    print(e)
                 finally:
                     if beforeHours() or (not self.crypto and close_all_positions_end_of_day()):
                         break
