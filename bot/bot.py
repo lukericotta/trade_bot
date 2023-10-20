@@ -43,18 +43,15 @@ class BoptimalTrader():
       string: training yaml configuration file
       bool: crypto
     """
-    def __init__(self, api_config, training_config, crypto, continuous):
+    def __init__(self, api_config, training_config, crypto):
       self.api_config = self.loadYaml(api_config)
       self.training_config = self.loadYaml(training_config)
-      self.crypto = crypto
-      self.continuous = continuous
-      
+      self.crypto = crypto      
       
     def loadYaml(self, path):
         with open(path, "r") as yamlfile:
             data = yaml.load(yamlfile, Loader=yaml.FullLoader)
         return data
-    
     
     def setup(self):
         self.API_KEY = self.api_config['Key']
@@ -88,11 +85,11 @@ class BoptimalTrader():
         side_count= [0, 0, 0]
 
         # First wait until not after hours
-        while afterHours() and self.continuous and not self.crypto:
+        while afterHours() and not self.crypto:
             continue
 
         self.api.cancel_all_orders()
-        while True:
+        while not afterHours() or self.crypto:
             my_orders = getOrders(self.api)
             
             if self.crypto:
@@ -127,17 +124,12 @@ class BoptimalTrader():
                 except:
                     print(f"Execution of trade with {symbol} failed for unknown reason")
                 finally:
-                    if afterHours() and not self.crypto:
-                        break
-                    if not self.crypto and close_all_positions_end_of_day():
+                    if beforeHours() or (not self.crypto and close_all_positions_end_of_day()):
                         break
             else:
-                if self.continuous:
-                    continue
+                continue
             break
         
-        if self.continuous:            
-            self.api.cancel_all_orders()
-            
+        self.api.cancel_all_orders()
         print("Counts for buy, sell, hold: ", side_count)    
 

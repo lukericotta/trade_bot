@@ -214,10 +214,10 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
     
     if open_price > close_price:
         side = 'sell'
-        side_matrix = [1, 0, 0]
+        side_matrix = [0, 1, 0]
     elif open_price < close_price:
         side = 'buy'
-        side_matrix = [0, 1, 0]    
+        side_matrix = [1, 0, 0]    
     else:
         print(f'Cannot place stop limit order where open_price {open_price} = close_price {close_price}')
         side_matrix = [0, 0, 1]
