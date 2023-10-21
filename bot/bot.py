@@ -113,7 +113,8 @@ class BoptimalTrader():
                     account = self.api.get_account()
                     if float(account.buying_power) < float(last_quote):
                         self.api.cancel_all_orders()
-                        #self.api.close_all_positions()
+                        if float(account.equity) < float(last_quote):
+                            self.api.close_all_positions()
                     model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
                     X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
                     pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
@@ -134,7 +135,8 @@ class BoptimalTrader():
             else:
                 continue
             break
-        
+
+        self.api_close_all_positions()
         self.api.cancel_all_orders()
         print("Counts for buy, sell, hold: ", side_count)    
 

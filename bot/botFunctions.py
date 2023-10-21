@@ -33,7 +33,8 @@ def afterHours():
 def beforeHours():
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
-    openTime = datetime.time(hour = 9, minute = 25, second = 0)
+    openTime = datetime.time(hour = 9, minute = 30, second = 0)
+    preOpenTime = datetime.time(hour = 9, minute = 25, second = 0)
     now = datetime.datetime.now(tz)
     # If a holiday
     if now.strftime('%Y-%m-%d') in us_holidays:
@@ -41,8 +42,8 @@ def beforeHours():
     # If it's a weekend
     if now.date().weekday() > 4:
         return False
-    # If before 0925
-    if (now.time() < openTime):
+    # If before 0930 and after 925
+    if (now.time() < openTime) and (now.time() > preOpenTime):
         return True
     
     return False  
