@@ -10,4 +10,4 @@ from apisetup import *
 
 # obtain account information
 account = api.get_account()
-print(account.buying_power)
+print(account)
