@@ -111,10 +111,12 @@ class BoptimalTrader():
                     last_quote = data['Close'].iloc[-1]
                     print(symbol, last_quote)
                     account = self.api.get_account()
-                    if float(account.buying_power) < float(last_quote):
+                    if float(account.portfolio_value) < float(last_quote):
+                        continue
+                    elif float(account.buying_power) < float(last_quote):
                         self.api.cancel_all_orders()
                         account = self.api.get_account()
-                        if float(account.equity) < float(last_quote):
+                        if float(account.buying_power) < float(last_quote):
                             self.api.close_all_positions()
                     model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
                     X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
