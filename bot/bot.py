@@ -82,64 +82,75 @@ class BoptimalTrader():
         return model, test_loss, minmax, n_features, n_steps
 
     def start(self):
-        side_count= [0, 0, 0]
-
-        # First wait until not after hours
-        while afterHours() and not self.crypto:
-            continue
-
-        self.api.cancel_all_orders()
-        while not afterHours() or self.crypto:
-            my_orders = getOrders(self.api)
+        SIDE_COUNTS = []
+        VARIATIONS = []
+        for i in [2, 3, 7, 12]:
+            for j in [1104, 2000]:
+                for k in [30, 80, 1000]:
+                    VARIATIONS.append((i,j,k))
+                    self.SEQ_LEN = i
+                    self.DATA_LEN = j
+                    self.EPOCHS = k
+                    side_count= [0, 0, 0]
             
-            if self.crypto:
-                df = getCrypto(self.AVAILABLE)
-            else:
-                table=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
-                df = table[0]
-                df.to_csv('S&P500-Info.csv')
-                df.to_csv("S&P500-Symbols.csv", columns=['Symbol'])
-                for drop in self.TO_DROP:
-                    df = df.drop(df[df['Symbol'] == drop].index)
-                
-            symbols_to_trade = [pos.symbol for pos in self.trading_client.get_all_positions()] + list(df.Symbol)
-            random.shuffle(symbols_to_trade)
-            for symbol in symbols_to_trade:
-                try:
-                    ticker_yahoo = yf.Ticker(symbol)
-                    data = ticker_yahoo.history()
-                    last_quote = data['Close'].iloc[-1]
-                    print(symbol, last_quote)
-                    account = self.api.get_account()
-                    if float(account.portfolio_value) < float(last_quote):
-                        continue
-                    elif float(account.buying_power) < float(last_quote):
-                        self.api.cancel_all_orders()
-                        account = self.api.get_account()
-                        if float(account.buying_power) < float(last_quote):
-                            self.api.close_all_positions()
-                    model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
-                    X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
-                    pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
-                    open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
-                    for order in open_orders:
-                        self.api.cancel_order(order.id)
-                    side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
-                    side_count = list( map(add, side_count, side) )
-                except KeyboardInterrupt:
-                    print("Trading stopped.")
-                    break
-                except Exception as e:
-                    print(f"Execution of trade with {symbol} failed for unknown reason")
-                    print(e)
-                finally:
-                    if beforeHours() or (not self.crypto and close_all_positions_end_of_day()):
+                    # First wait until not after hours
+                    #while afterHours() and not self.crypto:
+                    #    continue
+            
+                    self.api.cancel_all_orders()
+                    while afterHours() or self.crypto:
+                        my_orders = getOrders(self.api)
+                        
+                        if not self.crypto:
+                            df = getCrypto(self.AVAILABLE)
+                        else:
+                            table=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+                            df = table[0]
+                            df.to_csv('S&P500-Info.csv')
+                            df.to_csv("S&P500-Symbols.csv", columns=['Symbol'])
+                            for drop in self.TO_DROP:
+                                df = df.drop(df[df['Symbol'] == drop].index)
+                            
+                        symbols_to_trade = [pos.symbol for pos in self.trading_client.get_all_positions()] + list(df.Symbol)
+                        random.shuffle(symbols_to_trade)
+                        for symbol in symbols_to_trade:
+                            try:
+                                ticker_yahoo = yf.Ticker(symbol)
+                                data = ticker_yahoo.history()
+                                last_quote = data['Close'].iloc[-1]
+                                print(symbol, last_quote)
+                                account = self.api.get_account()
+                                if float(account.portfolio_value) < float(last_quote):
+                                    continue
+                                elif float(account.buying_power) < float(last_quote):
+                                    self.api.cancel_all_orders()
+                                    account = self.api.get_account()
+                                    if float(account.buying_power) < float(last_quote):
+                                        self.api.close_all_positions()
+                                model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
+                                X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
+                                pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
+                                open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
+                                for order in open_orders:
+                                    self.api.cancel_order(order.id)
+                                side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
+                                side_count = list( map(add, side_count, side) )
+                            except KeyboardInterrupt:
+                                print("Trading stopped.")
+                                break
+                            except Exception as e:
+                                print(f"Execution of trade with {symbol} failed for unknown reason")
+                                print(e)
+                            finally:
+                                if beforeHours() or (not self.crypto and close_all_positions_end_of_day()):
+                                    break
+                        else:
+                            break
                         break
-            else:
-                continue
-            break
-
-        self.api.close_all_positions()
-        self.api.cancel_all_orders()
-        print("Counts for buy, sell, hold: ", side_count)    
-
+            
+                    self.api.cancel_all_orders()
+                    print("Counts for buy, sell, hold: ", side_count) 
+                    SIDE_COUNTS.append(side_count)
+            
+        print(SIDE_COUNTS)
+        print(VARIATIONS)

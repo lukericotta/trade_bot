@@ -58,3 +58,4 @@ bot/cli/__init__.py
 bot/cli/template.py
 bot.egg-info
 train
+build

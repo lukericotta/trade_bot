@@ -262,8 +262,8 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
                 }
 
     print(f"Executing trade...")
-    r = requests.post(orders_url, json = order,headers = headers)
-    print(r.content)
+    #r = requests.post(orders_url, json = order,headers = headers)
+    #print(r.content)
     
     return side_matrix
     
