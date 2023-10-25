@@ -48,7 +48,7 @@ def beforeHours():
     
     return False  
 
-def close_all_positions_end_of_day():
+def close_all_positions_end_of_day(api):
     #  First, check if the market is currently open. No point in checking if closed.
     if api.get_clock().is_open:
         #  Get the current time (New York time)

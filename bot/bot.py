@@ -87,7 +87,7 @@ class BoptimalTrader():
         AVG_LOSS=[]
         for i in [2, 3, 7, 12]:
             for j in [1104, 2000]:
-                for k in [30, 80, 1000]:
+                for k in [30, 80, 1000, 2000]:
                     VARIATIONS.append((i,j,k))
                     self.SEQ_LEN = i
                     self.DATA_LEN = j
@@ -138,8 +138,8 @@ class BoptimalTrader():
                                     self.api.cancel_order(order.id)
                                 side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
                                 side_count = list( map(add, side_count, side) )
-                                average_test_loss += test_loss
-                                average_appro_loss += appro_loss
+                                average_test_loss += test_loss #sum(test_loss)/len(test_loss)
+                                average_appro_loss += sum(appro_loss)/len(appro_loss)
                             except KeyboardInterrupt:
                                 print("Trading stopped.")
                                 break
@@ -147,7 +147,7 @@ class BoptimalTrader():
                                 print(f"Execution of trade with {symbol} failed for unknown reason")
                                 print(e)
                             finally:
-                                if beforeHours() or (not self.crypto and close_all_positions_end_of_day()):
+                                if beforeHours() or (not self.crypto and close_all_positions_end_of_day(self.api)):
                                     break
                         else:
                             break
@@ -161,5 +161,5 @@ class BoptimalTrader():
         print(VARIATIONS)            
         print(SIDE_COUNTS)
         print(AVG_LOSS)
-        res = "\n".join("{} {}".format(x, y) for x, y in zip(VARIATIONS, SIDE_COUNTS, AVG_LOSS))
+        res = "\n".join("{} {} {}".format(x, y, z) for x, y, z in zip(VARIATIONS, SIDE_COUNTS, AVG_LOSS))
         print(res)
