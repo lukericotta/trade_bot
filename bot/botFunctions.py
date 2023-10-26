@@ -30,7 +30,7 @@ def afterHours():
     
     return False    
 
-def beforeHours(crypto):
+def beforeHours(crypto, api):
     if crypto:
         tz = pytz.timezone('US/Eastern')
         us_holidays = holidays.US()
@@ -62,11 +62,11 @@ def beforeHours(crypto):
             return False
         # If before 1600 and after 1559
         if (now.time() < openTime) and (now.time() > preOpenTime):
-            return close_all_positions_end_of_day()
+            return close_all_positions_end_of_day(api)
         
         return False  
         
-def close_all_positions_end_of_day():
+def close_all_positions_end_of_day(api):
     #  First, check if the market is currently open. No point in checking if closed.
     if api.get_clock().is_open:
         #  Get the current time (New York time)
