@@ -30,24 +30,42 @@ def afterHours():
     
     return False    
 
-def beforeHours():
-    tz = pytz.timezone('US/Eastern')
-    us_holidays = holidays.US()
-    openTime = datetime.time(hour = 9, minute = 30, second = 0)
-    preOpenTime = datetime.time(hour = 9, minute = 25, second = 0)
-    now = datetime.datetime.now(tz)
-    # If a holiday
-    if now.strftime('%Y-%m-%d') in us_holidays:
-        return False
-    # If it's a weekend
-    if now.date().weekday() > 4:
-        return False
-    # If before 0930 and after 925
-    if (now.time() < openTime) and (now.time() > preOpenTime):
-        return True
-    
-    return False  
-
+def beforeHours(crypto):
+    if crypto:
+        tz = pytz.timezone('US/Eastern')
+        us_holidays = holidays.US()
+        openTime = datetime.time(hour = 9, minute = 30, second = 0)
+        preOpenTime = datetime.time(hour = 9, minute = 25, second = 0)
+        now = datetime.datetime.now(tz)
+        # If a holiday
+        if now.strftime('%Y-%m-%d') in us_holidays:
+            return False
+        # If it's a weekend
+        if now.date().weekday() > 4:
+            return False
+        # If before 0930 and after 925
+        if (now.time() < openTime) and (now.time() > preOpenTime):
+            return True
+        
+        return False  
+    else:
+        tz = pytz.timezone('US/Eastern')
+        us_holidays = holidays.US()
+        openTime = datetime.time(hour = 4, minute = 00, second = 0)
+        preOpenTime = datetime.time(hour = 3, minute = 59, second = 0)
+        now = datetime.datetime.now(tz)
+        # If a holiday
+        if now.strftime('%Y-%m-%d') in us_holidays:
+            return False
+        # If it's a weekend
+        if now.date().weekday() > 4:
+            return False
+        # If before 1600 and after 1559
+        if (now.time() < openTime) and (now.time() > preOpenTime):
+            return close_all_positions_end_of_day()
+        
+        return False  
+        
 def close_all_positions_end_of_day():
     #  First, check if the market is currently open. No point in checking if closed.
     if api.get_clock().is_open:
