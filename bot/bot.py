@@ -133,13 +133,14 @@ class BoptimalTrader():
                     print(f"Execution of trade with {symbol} failed for unknown reason")
                     print(e)
                 finally:
-                    if beforeHours() or (not self.crypto and close_all_positions_end_of_day()):
+                    if close_all_positions_end_of_day():
                         break
             else:
                 continue
             break
 
-        self.api.close_all_positions()
+        if not self.crypto:
+            self.api.close_all_positions()
         self.api.cancel_all_orders()
         print("Counts for buy, sell, hold: ", side_count)    
 
