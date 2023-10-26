@@ -133,7 +133,7 @@ class BoptimalTrader():
                     print(f"Execution of trade with {symbol} failed for unknown reason")
                     print(e)
                 finally:
-                    if close_all_positions_end_of_day():
+                    if beforeHours(self.crypto):
                         break
             else:
                 continue
