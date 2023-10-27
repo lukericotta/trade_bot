@@ -18,7 +18,7 @@ Available:
     - XTZ
 Loss: mse
 Optimizer: adam
-SeqLen: 7
+SeqLen: 12
 TimeInForce: day
 ToDrop:
     - BRK.B
