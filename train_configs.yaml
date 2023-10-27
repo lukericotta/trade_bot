@@ -25,5 +25,5 @@ ToDrop:
     - BF.B
 Years: 5
 DataLen: 1104
-Epochs: 80
+Epochs: 2000
 Quantity: 1

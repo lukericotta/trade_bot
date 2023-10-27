@@ -139,8 +139,9 @@ class BoptimalTrader():
                 continue
             break
 
+        self.api.cancel_all_orders()
         if not self.crypto:
             self.api.close_all_positions()
-        self.api.cancel_all_orders()
+
         print("Counts for buy, sell, hold: ", side_count)    
 
