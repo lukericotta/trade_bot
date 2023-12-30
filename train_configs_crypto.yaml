@@ -23,7 +23,7 @@ TimeInForce: gtc
 ToDrop:
     - BRK.B
     - BF.B
-Years: 5
+Years: 3
 DataLen: 1104
 Epochs: 80
 Quantity: 1
