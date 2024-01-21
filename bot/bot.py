@@ -5,6 +5,7 @@ BoptimalTrader
 from alpaca.trading.client import TradingClient
 from .botFunctions import *
 from .botTrain import *
+from .sentiment import *
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
@@ -70,6 +71,7 @@ class BoptimalTrader():
         self.DATA_LEN = self.training_config['DataLen']
         self.EPOCHS = self.training_config['Epochs']
         self.QTY = self.training_config['Quantity']
+        self.NARTICLES = self.training_config['Articles']
 
     def train(self, sym, data_len, seq_len):
         X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(sym, data_len, seq_len)
@@ -104,6 +106,7 @@ class BoptimalTrader():
                 
             symbols_to_trade = [pos.symbol for pos in self.trading_client.get_all_positions()] + list(df.Symbol)
             random.shuffle(symbols_to_trade)
+            symbols_sentiment = parseTickerNews(symbols_to_trade, 3)
             for symbol in symbols_to_trade:
                 try:
                     ticker_yahoo = yf.Ticker(symbol)
@@ -118,13 +121,16 @@ class BoptimalTrader():
                         account = self.api.get_account()
                         if float(account.buying_power) < float(last_quote):
                             self.api.close_all_positions()
+                            
+                    mean_sentiment = parseTickerNews([symbol], self.NARTICLES)
+                    
                     model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
                     X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
                     pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
                         self.api.cancel_order(order.id)
-                    side = create_order(pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
+                    side = create_order(mean_sentiment[symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
                     side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
                     print("Trading stopped.")
