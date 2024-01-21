@@ -25,6 +25,6 @@ ToDrop:
     - BF.B
 Years: 3
 DataLen: 1104
-Epochs: 80
+Epochs: 100
 Quantity: 1
 Articles: 3
