@@ -204,7 +204,7 @@ def market_predict(model,minmax,seq_len,n_features,n_steps,data,test_loss):
 
 ###############################################################################
 
-def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers,qty,crypto):
+def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers,qty,crypto):
     open_price,close_price = pred_price[0],pred_price[1]
     if crypto:
         appro_loss += price*qty*.0025
@@ -212,15 +212,16 @@ def create_order(pred_price,company,test_loss,appro_loss,time_in_force,price,ord
     print(f"Predicted close price: {close_price}")
     print("appro loss", appro_loss)
     
-    if open_price > close_price:
+    if sentiment < 0:
         side = 'sell'
         side_matrix = [0, 1, 0]
-    elif open_price < close_price:
+    elif sentiment > 0:
         side = 'buy'
         side_matrix = [1, 0, 0]    
     else:
         print(f'Cannot place stop limit order where open_price {open_price} = close_price {close_price}')
         side_matrix = [0, 0, 1]
+        return side_matrix
         
     if side == 'buy':
         print(f"BUY {company} at {price}")
