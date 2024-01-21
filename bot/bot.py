@@ -87,11 +87,11 @@ class BoptimalTrader():
         side_count= [0, 0, 0]
 
         # First wait until not after hours
-        while not afterHours() and not self.crypto:
+        while afterHours() and not self.crypto:
             continue
 
         self.api.cancel_all_orders()
-        while afterHours() or self.crypto:
+        while not afterHours() or self.crypto:
             try:
                 my_orders = getOrders(self.api)
 
