@@ -40,7 +40,6 @@ def parseTickerNews(tickers, n):
     except KeyError:
         pass
     
-    
     # Iterate through the news
     parsed_news = []
     for file_name, news_table in news_tables.items():
