@@ -150,9 +150,11 @@ class BoptimalTrader():
             except Exception as e:
                 print(f"Exception occurred: ")
                 print(e)
+                time.sleep(50000)
         self.api.cancel_all_orders()
         if not self.crypto:
             self.api.close_all_positions()
 
-        print("Counts for buy, sell, hold: ", side_count)    
+        print("Counts for buy, sell, hold: ", side_count)
+        time.sleep(50000)
 
