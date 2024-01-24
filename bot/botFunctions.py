@@ -51,8 +51,8 @@ def beforeHours(crypto, api):
     else:
         tz = pytz.timezone('US/Eastern')
         us_holidays = holidays.US()
-        openTime = datetime.time(hour = 4, minute = 00, second = 0)
-        preOpenTime = datetime.time(hour = 3, minute = 56, second = 0)
+        openTime = datetime.time(hour = 16, minute = 00, second = 0)
+        preOpenTime = datetime.time(hour = 15, minute = 59, second = 0)
         now = datetime.datetime.now(tz)
         # If a holiday
         if now.strftime('%Y-%m-%d') in us_holidays:
