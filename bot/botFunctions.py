@@ -70,7 +70,7 @@ def close_all_positions_end_of_day(api):
     #  First, check if the market is currently open. No point in checking if closed.
     if api.get_clock().is_open:
         #  Get the current time (New York time)
-        time_now = dt.datetime.now(pytz.timezone('US/Eastern'))
+        time_now = datetime.datetime.now(pytz.timezone('US/Eastern'))
 
         #  Calculate the timestamp for 5 mins before close (15:55) today.
         five_mins_before_end_of_day = pd.Timestamp(year=time_now.year, month=time_now.month, day=time_now.day, hour=15,
@@ -79,6 +79,7 @@ def close_all_positions_end_of_day(api):
         #  If the current time is the same as (or after) 15:55, close all positions.
         if time_now.isoformat() >= five_mins_before_end_of_day.isoformat():
             print('Closing all positions...')
+            api.cancel_all_orders()
             api.close_all_positions()
             return True
         else:
