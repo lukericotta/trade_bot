@@ -88,7 +88,7 @@ class BoptimalTrader():
         was_waiting = False
 
         # First wait until not after hours
-        while not afterHours():
+        while afterHours():
             was_waiting = True
             continue
 
