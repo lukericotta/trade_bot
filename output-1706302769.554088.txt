@@ -1,0 +1,75 @@
+2024-01-26 20:59:31.907813: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+Alpaca orders
+                                         id  ...      source
+0      32145636-a6c8-4c56-ae29-3b29311b6793  ...        None
+1      8c95e8d8-4884-4832-8d4b-7a478d84ead6  ...        None
+2      2b450c43-402a-4baa-8422-33cfc2587236  ...        None
+3      d0e824bd-fb7f-44da-ae2c-1d0a347938dc  ...        None
+4      2b7bd23c-54bc-4acc-a6e7-f09e426a2287  ...        None
+...                                     ...  ...         ...
+74255  50e1e151-6746-4f93-a45b-ccbaf897e4e4  ...  access_key
+74256  5194b97b-d37f-400a-9a6a-118ed077aede  ...  access_key
+74257  db432339-dbf9-4735-9741-6cfbb74f9fbe  ...  access_key
+74258  dbcaf1f4-2316-4712-be39-c53bbec80ace  ...  access_key
+74259  c12fc7be-0f25-4c7f-8a8f-d243ca02c776  ...  access_key
+
+[73964 rows x 34 columns]
+CMS 56.375
+
+
+Recent News Headlines for CMS: 
+Consumers Energy Foundation Planet Awards to Provide $500,000 to Environmental Projects ( Today 11:28AM )
+CMS Energy (CMS) Earnings Expected to Grow: What to Know Ahead of Next Week's Release ( Jan-25-24 10:00AM )
+Analyst Report: CMS Energy Corporation ( Jan-24-24 07:23PM )
+
+
+              Date     Time  neg    neu    pos  compound
+Ticker                                                  
+CMS     2024-01-26  11:28AM  0.0  0.718  0.282    0.6249
+CMS     2024-01-25  10:00AM  0.0  0.890  0.110    0.2732
+CMS     2024-01-24  07:23PM  0.0  0.792  0.208    0.2732
+CMS     2024-01-23  12:25PM  0.0  0.781  0.219    0.6808
+CMS     2024-01-16  02:00PM  0.0  0.667  0.333    0.7579
+
+
+        Mean Sentiment
+Ticker                
+CMS               0.31
+[*********************100%%**********************]  1 of 1 completed2024-01-26 20:59:49.026663: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2024-01-26 20:59:49.027236: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcuda.so.1
+2024-01-26 20:59:49.053339: E tensorflow/stream_executor/cuda/cuda_driver.cc:328] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+2024-01-26 20:59:49.053354: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (lukes): /proc/driver/nvidia/version does not exist
+2024-01-26 20:59:49.053482: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-01-26 20:59:49.054060: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+[nltk_data] Downloading package vader_lexicon to
+[nltk_data]     /home/luker/nltk_data...
+[nltk_data]   Package vader_lexicon is already up-to-date!
+/home/luker/trade_bot/bot/sentiment.py:74: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  news.Date[i] = datetime.date.today()
+WARNING:tensorflow:`period` argument is deprecated. Please use `save_freq` to specify the frequency in number of batches seen.
+`period` argument is deprecated. Please use `save_freq` to specify the frequency in number of batches seen.
+2024-01-26 20:59:49.146247: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:116] None of the MLIR optimization passes are enabled (registered 2)
+2024-01-26 20:59:49.162928: I tensorflow/core/platform/profile_utils/cpu_utils.cc:112] CPU Frequency: 2899885000 Hz
+
+(753, 7, 4)
+--- Training Report ---
+Execution time:  2.67 s
+Testing Accuracy: 99.7 %
+Training Accuracy: 99.7 %
+Average Network Accuracy: 99.7 %
+[*********************100%%**********************]  1 of 1 completed
+(753, 7, 4)
+Predicted open price: 56.70398712158203
+Predicted close price: 57.25638198852539
+appro loss [0.06848999404907162, 0.06513000869750915]
+BUY CMS at 56.459999084472656
+limit_price 57.3215119972229
+stop_price 57.19125197982788
+Executing trade...
+b'{"id":"f1d90bf4-c19f-46d5-9e45-af3bab7189ae","client_order_id":"119f954b-0835-40a9-a8be-60807cb42608","created_at":"2024-01-26T20:59:52.858773446Z","updated_at":"2024-01-26T20:59:52.858830256Z","submitted_at":"2024-01-26T20:59:52.857190416Z","filled_at":null,"expired_at":null,"canceled_at":null,"failed_at":null,"replaced_at":null,"replaced_by":null,"replaces":null,"asset_id":"cfae5876-5fd7-43ec-8daf-d583ef094a8b","symbol":"CMS","asset_class":"us_equity","notional":null,"qty":"1","filled_qty":"0","filled_avg_price":null,"order_class":"","order_type":"stop_limit","type":"stop_limit","side":"buy","time_in_force":"day","limit_price":"57.32","stop_price":"57.19","status":"pending_new","extended_hours":false,"legs":null,"trail_percent":null,"trail_price":null,"hwm":null,"subtag":null,"source":null}'
+Closing all positions...
+Counts for buy, sell, hold:  [1, 0, 0]
