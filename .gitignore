@@ -54,8 +54,6 @@ Thumbs.db
 # Files copies in setup
 bot/README.md
 bot/LICENSE
-bot/build/*
-bot/cli/__init__.py
-bot/cli/template.py
+bot/build/
 bot.egg-info
 train
