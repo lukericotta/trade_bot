@@ -30,41 +30,23 @@ def afterHours():
     
     return False    
 
-def beforeHours(crypto, api):
-    if crypto:
-        tz = pytz.timezone('US/Eastern')
-        us_holidays = holidays.US()
-        openTime = datetime.time(hour = 9, minute = 30, second = 0)
-        preOpenTime = datetime.time(hour = 9, minute = 25, second = 0)
-        now = datetime.datetime.now(tz)
-        # If a holiday
-        if now.strftime('%Y-%m-%d') in us_holidays:
-            return False
-        # If it's a weekend
-        if now.date().weekday() > 4:
-            return False
-        # If before 0930 and after 925
-        if (now.time() < openTime) and (now.time() > preOpenTime):
-            return True
-        
-        return False  
-    else:
-        tz = pytz.timezone('US/Eastern')
-        us_holidays = holidays.US()
-        openTime = datetime.time(hour = 16, minute = 00, second = 0)
-        preOpenTime = datetime.time(hour = 15, minute = 59, second = 0)
-        now = datetime.datetime.now(tz)
-        # If a holiday
-        if now.strftime('%Y-%m-%d') in us_holidays:
-            return False
-        # If it's a weekend
-        if now.date().weekday() > 4:
-            return False
-        # If before 1600 and after 1559
-        if (now.time() < openTime) and (now.time() > preOpenTime):
-            return close_all_positions_end_of_day(api)
-        
-        return False  
+def beforeHours(api):
+    tz = pytz.timezone('US/Eastern')
+    us_holidays = holidays.US()
+    openTime = datetime.time(hour = 16, minute = 00, second = 0)
+    preOpenTime = datetime.time(hour = 15, minute = 59, second = 0)
+    now = datetime.datetime.now(tz)
+    # If a holiday
+    if now.strftime('%Y-%m-%d') in us_holidays:
+        return False
+    # If it's a weekend
+    if now.date().weekday() > 4:
+        return False
+    # If before 1600 and after 1559
+    if (now.time() < openTime) and (now.time() > preOpenTime):
+        return close_all_positions_end_of_day(api)
+    
+    return False  
         
 def close_all_positions_end_of_day(api):
     #  First, check if the market is currently open. No point in checking if closed.

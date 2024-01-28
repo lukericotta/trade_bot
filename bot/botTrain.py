@@ -204,10 +204,8 @@ def market_predict(model,minmax,seq_len,n_features,n_steps,data,test_loss):
 
 ###############################################################################
 
-def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers,qty,crypto):
+def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force,price,orders_url,headers,qty):
     open_price,close_price = pred_price[0],pred_price[1]
-    if crypto:
-        appro_loss += price*qty*.0025
     print(f"Predicted open price: {open_price}")
     print(f"Predicted close price: {close_price}")
     print("appro loss", appro_loss)

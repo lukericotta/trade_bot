@@ -12,7 +12,8 @@ from bot import BoptimalTrader
 @click.argument('api_config')
 @click.argument('training_config')
 @click.option('--crypto/--stocks', default=False)
-def main(api_config, training_config, crypto):
+@click.option('--export/--skip', default=False)
+def main(api_config, training_config, crypto, export):
   """
   BoptimalTrader script
 
@@ -20,7 +21,7 @@ def main(api_config, training_config, crypto):
   """
   logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-  bot = BoptimalTrader(api_config, training_config, crypto)
+  bot = BoptimalTrader(api_config, training_config, crypto, export)
   bot.setup()
   bot.start()
 

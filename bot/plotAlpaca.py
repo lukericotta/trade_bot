@@ -60,28 +60,40 @@ class TradingClientPortfolioAble(TradingClient):
 
         return PortfolioHistory(**response)
 
-def plotAlpaca(n):    
+def isHoliday(now):
+    # If a holiday
+    us_holidays = holidays.US()
+    if now.strftime('%Y-%m-%d') in us_holidays:
+        return True
+
+def plotAlpaca(n):
     start = dt.datetime.now() - relativedelta(years=1)
     end = dt.date.today()
     SP500 = web.DataReader(['sp500'], 'fred', start, end)
     
     SP500['daily_return'] = (SP500['sp500']/ SP500['sp500'].shift(1)) -1
-    
+
     #Drop all Not a number values using drop method.
+    SP500 = SP500.tail(n).drop(columns=['daily_return'])
+
     SP500.dropna(inplace = True)
-    
-    SP500 = SP500.tail(n)
-    
+        
     period = len(SP500['sp500'])
     
     SP500['sp500'].plot(title='S&P 500 Yearly Return')
         
     spList = []
+    spDates = []
     indexList = []
     for index, row in SP500.iterrows():
         indexList.append(index)
-        if index.to_pydatetime() >= dt.date(2023,12,29):
+        d = dt.date(2023,12,29)
+        start_datetime = dt.datetime(d.year, d.month, d.day)
+        if isHoliday(index.to_pydatetime()):
+            spList.append(spList[-1])
+        elif index.to_pydatetime() >= start_datetime:
             spList.append(row['sp500'])
+            spDates.append(index)
     
     spFirst = spList[0]
     spList = [price*100000/spFirst for price in spList]
@@ -93,15 +105,17 @@ def plotAlpaca(n):
     portHistory=trading_client.get_portfolio_history(filter=portFilter)
     print(portHistory)
     
-    plt.plot(portHistory.equity, "r-", alpha=0.5)
+    plt.plot(portHistory.equity, "r-", alpha=0.5, label="Trade Bot")
+    plt.plot(spList, "b-", alpha=0.5, label="S&P 500")
     plt.show()
         
     dates=[dt.datetime.fromtimestamp(ts) for ts in portHistory.timestamp]
     datenums=md.date2num(dates)
     ax=plt.gca()
-    xfmt = md.DateFormatter('%Y-%m')
+    xfmt = md.DateFormatter('%m-%d')
     ax.xaxis.set_major_formatter(xfmt)
-    plt.plot(datenums,portHistory.equity, "r-", alpha=0.5)
+    plt.plot(datenums,portHistory.equity, "r-", alpha=0.5, label="Trade Bot")
+    plt.plot(datenums,spList, "b-", alpha=0.5, label="S&P 500")
     plt.show()
     
     plt.xlabel('Time')
@@ -110,11 +124,13 @@ def plotAlpaca(n):
     plt.grid(True)
     ax=plt.gca()
     ax.xaxis.set_major_formatter(xfmt)
-    plt.plot(datenums,portHistory.equity, "r-", alpha=0.5)
+    plt.plot(datenums,portHistory.equity, "r-", alpha=0.5, label="Trade Bot")
+    plt.plot(datenums,spList, "b-", alpha=0.5, label="S&P 500")
+    plt.legend(loc="upper left")
         
-    return plt, spList, datenums, portHistory.equity, indexList
+    return plt
 
 if __name__ == "__main__":
     daysSinceStart = dt.date.today() - dt.date(2023,12,29)
-    plt, sp, x, y, indicies = plotAlpaca(daysSinceStart.days) # pylint: disable=no-value-for-parameter
+    plt = plotAlpaca(daysSinceStart.days) # pylint: disable=no-value-for-parameter
     plt.show()

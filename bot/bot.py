@@ -5,6 +5,7 @@ BoptimalTrader
 from alpaca.trading.client import TradingClient
 from .botFunctions import *
 from .botTrain import *
+from .plotAlpaca import *
 from .sentiment import *
 from keras.models import Sequential
 from keras.layers import LSTM
@@ -42,12 +43,12 @@ class BoptimalTrader():
     Args:
       string: API yaml configuration file
       string: training yaml configuration file
-      bool: crypto
     """
-    def __init__(self, api_config, training_config, crypto):
+    def __init__(self, api_config, training_config, crypto, export):
       self.api_config = self.loadYaml(api_config)
       self.training_config = self.loadYaml(training_config)
-      self.crypto = crypto      
+      self.crypto = crypto
+      self.export_sentiments = export
       
     def loadYaml(self, path):
         with open(path, "r") as yamlfile:
@@ -85,16 +86,10 @@ class BoptimalTrader():
 
     def start(self):
         side_count= [0, 0, 0]
-        was_waiting = False
 
         # First wait until not after hours
-        while afterHours():
-            was_waiting = True
+        while afterHours() and not self.crypto:
             continue
-
-        if was_waiting:
-            self.api.cancel_all_orders()
-            self.api.close_all_positions()
             
         try:
             my_orders = getOrders(self.api)
@@ -107,23 +102,20 @@ class BoptimalTrader():
                 
             symbols_to_trade = [pos.symbol for pos in self.trading_client.get_all_positions()] + list(df.Symbol)
             random.shuffle(symbols_to_trade)
-            for symbol in symbols_to_trade:
+            
+            if self.export_sentiments:
+                sentiments = parseTickerNews(symbols_to_trade, self.NARTICLES)
+                sentiments.to_csv('sentiments.txt', sep='\t', index=True)
+            
+            for symbol in symbols_to_trade[0:10]:
                 try:
                     ticker_yahoo = yf.Ticker(symbol)
                     data = ticker_yahoo.history()
                     last_quote = data['Close'].iloc[-1]
                     print(symbol, last_quote)
                     account = self.api.get_account()
-                    if float(account.portfolio_value) < float(last_quote):
-                        continue
-                    elif float(account.buying_power) < float(last_quote):
-                        self.api.cancel_all_orders()
-                        account = self.api.get_account()
-                        if not self.crypto and float(account.buying_power) < float(last_quote):
-                            self.api.close_all_positions()
-                            
+                    
                     mean_sentiment = parseTickerNews([symbol], self.NARTICLES)
-
                     model, test_loss, minmax, n_features, n_steps = self.train(symbol, self.DATA_LEN, self.SEQ_LEN)
                     X,y,n_features,minmax,n_steps,close,open_,high,low,last_price = data_setup(symbol, self.DATA_LEN, self.SEQ_LEN)
                     pred,appro_loss = market_predict(model,minmax, self.SEQ_LEN,n_features,n_steps,X,test_loss)
@@ -131,26 +123,28 @@ class BoptimalTrader():
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
                         self.api.cancel_order(order.id)
-                       
-                    side = create_order(mean_sentiment['Mean Sentiment'][symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,self.QTY,self.crypto)
-
+                        
+                    self.api.close_position(symbol)
+                    quantity = round(self.QTY/last_quote)*abs(round(mean_sentiment*10))
+                    side = create_order(mean_sentiment['Mean Sentiment'][symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,quantity)
                     side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
                     print("Trading stopped.")
                     break
                 except Exception as e:
-                    print(f"Execution of trade with {symbol} failed for unknown reason")
+                    print(f"ERROR: Execution of trade with {symbol} failed for unknown reason")
                     print(e)
-                    break
                 finally:
-                    if beforeHours(self.crypto, self.api):
+                    if afterHours() and not self.crypto:
                         break
+                    else:
+                        continue
         except Exception as e:
             print(f"Exception occurred: ")
             print(e)
             
-        self.api.cancel_all_orders()
-        self.api.close_all_positions()
-
         print("Counts for buy, sell, hold: ", side_count)
+        daysSinceStart = datetime.date.today() - datetime.date(2023,12,29)
+        plt = plotAlpaca(daysSinceStart.days) # pylint: disable=no-value-for-parameter
+        plt.savefig('plot.png')
 

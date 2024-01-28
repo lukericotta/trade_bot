@@ -18,13 +18,13 @@ Available:
     - XTZ
 Loss: mse
 Optimizer: adam
-SeqLen: 7
+SeqLen: 5
 TimeInForce: day
 ToDrop:
     - BRK.B
     - BF.B
 Years: 3
 DataLen: 1104
-Epochs: 100
-Quantity: 1
+Epochs: 80
+Quantity: 2000
 Articles: 3
