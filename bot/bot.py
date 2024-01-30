@@ -128,7 +128,7 @@ class BoptimalTrader():
                         self.api.close_position(symbol)
                     except:
                         print(f'{symbol} - No position to close')
-                    quantity = round(self.QTY/last_quote)*abs(round(mean_sentiment*10))
+                    quantity = round(self.QTY/last_quote)*abs(round(mean_sentiment['Mean Sentiment'][symbol]*10))
                     side = create_order(mean_sentiment['Mean Sentiment'][symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,quantity)
                     side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
