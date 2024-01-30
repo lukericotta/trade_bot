@@ -227,7 +227,7 @@ def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force
         print('stop_price', close_price - appro_loss[1])
         order = {
             'symbol':company,
-            'qty':round(qty*(test_loss/100)),
+            'qty':round(qty),
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': side,
@@ -246,7 +246,7 @@ def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force
         print('stop_price', close_price + appro_loss[1])
         order = {
             'symbol':company,
-            'qty':round(qty*(test_loss/100)),
+            'qty':round(qty),
             'type':'stop_limit',
             'time_in_force': time_in_force,
             'side': side,
