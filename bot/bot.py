@@ -107,7 +107,7 @@ class BoptimalTrader():
                 sentiments = parseTickerNews(symbols_to_trade, self.NARTICLES)
                 sentiments.to_csv('sentiments.txt', sep='\t', index=True)
             
-            for symbol in symbols_to_trade[0:10]:
+            for symbol in symbols_to_trade:
                 try:
                     ticker_yahoo = yf.Ticker(symbol)
                     data = ticker_yahoo.history()
