@@ -1,5 +1,0 @@
-[nltk_data] Downloading package vader_lexicon to
-[nltk_data]     /Users/lucianoricotta/nltk_data...
-[nltk_data]   Package vader_lexicon is already up-to-date!
-
-Aborted!

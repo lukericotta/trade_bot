@@ -123,8 +123,11 @@ class BoptimalTrader():
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
                         self.api.cancel_order(order.id)
-                        
-                    self.api.close_position(symbol)
+                    
+                    try:
+                        self.api.close_position(symbol)
+                    except:
+                        print(f'{symbol} - No position to close')
                     quantity = round(self.QTY/last_quote)*abs(round(mean_sentiment*10))
                     side = create_order(mean_sentiment['Mean Sentiment'][symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,quantity)
                     side_count = list( map(add, side_count, side) )
