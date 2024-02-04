@@ -34,7 +34,7 @@ def beforeHours(api):
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
     openTime = datetime.time(hour = 16, minute = 00, second = 0)
-    preOpenTime = datetime.time(hour = 15, minute = 59, second = 0)
+    preOpenTime = datetime.time(hour = 15, minute = 55, second = 0)
     now = datetime.datetime.now(tz)
     # If a holiday
     if now.strftime('%Y-%m-%d') in us_holidays:
@@ -42,7 +42,7 @@ def beforeHours(api):
     # If it's a weekend
     if now.date().weekday() > 4:
         return False
-    # If before 1600 and after 1559
+    # If before 1600 and after 1555
     if (now.time() < openTime) and (now.time() > preOpenTime):
         return close_all_positions_end_of_day(api)
     
