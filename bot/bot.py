@@ -153,6 +153,7 @@ class BoptimalTrader():
                     print(e)
                 finally:
                     if beforeHours(self.api):
+                        time.sleep(600)
                         break
                     else:
                         continue
