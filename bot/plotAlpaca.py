@@ -66,7 +66,9 @@ def isHoliday(now):
     if now.strftime('%Y-%m-%d') in us_holidays:
         return True
 
-def plotAlpaca(n):
+def plotAlpaca(start_date, key, secret):
+    n = dt.date.today() - start_date
+    n = n.days
     start = dt.datetime.now() - relativedelta(years=1)
     end = dt.date.today()
     SP500 = web.DataReader(['sp500'], 'fred', start, end)
@@ -87,7 +89,7 @@ def plotAlpaca(n):
     indexList = []
     for index, row in SP500.iterrows():
         indexList.append(index)
-        d = dt.date(2023,12,29)
+        d = start_date
         start_datetime = dt.datetime(d.year, d.month, d.day)
         if isHoliday(index.to_pydatetime()):
             spList.append(spList[-1])
@@ -96,11 +98,11 @@ def plotAlpaca(n):
             spDates.append(index)
     
     spFirst = spList[0]
-    spList = [price*100000/spFirst for price in spList]
+    spList = [price*1000000/spFirst for price in spList]
     
     plt.plot(spList, 'b-')
     
-    trading_client = TradingClientPortfolioAble('PK4VZZ552005SKXY7GI1', 'Oe7kuyX730x9pZ2lhYDOdZEQzoJDZbXavZ97e57B', paper=True)
+    trading_client = TradingClientPortfolioAble(key, secret, paper=True)
     portFilter = GetPortfolioHistoryRequest(extended_hours=True, period=f'{n}D', timeframe='1D')
     portHistory=trading_client.get_portfolio_history(filter=portFilter)
     print(portHistory)
@@ -131,6 +133,5 @@ def plotAlpaca(n):
     return plt
 
 if __name__ == "__main__":
-    daysSinceStart = dt.date.today() - dt.date(2023,12,29)
-    plt = plotAlpaca(daysSinceStart.days) # pylint: disable=no-value-for-parameter
+    plt = plotAlpaca(dt.date(2024,1,29), 'PKMKQR4K6AHO51JD6X3S', 'TvtrNsGCRnmi1KH9zt3feQMhuitbcbU19ddndnIa') # pylint: disable=no-value-for-parameter
     plt.show()

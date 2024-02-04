@@ -210,17 +210,19 @@ def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force
     print(f"Predicted close price: {close_price}")
     print("appro loss", appro_loss)
     
-    if sentiment < 0:
+    if sentiment < 0 and close_price < open_price:
         side = 'sell'
         side_matrix = [0, 1, 0]
-    elif sentiment > 0:
+    elif sentiment > 0 and close_price > open_price:
         side = 'buy'
         side_matrix = [1, 0, 0]    
     else:
-        print(f'Cannot place stop limit order where open_price {open_price} = close_price {close_price}')
+        print(f'Cannot place stop limit order where sentiment is {sentiment} and open_price {open_price} = close_price {close_price}')
         side_matrix = [0, 0, 1]
         return side_matrix
-        
+
+    print(f"Will attempt to place a {side} order for {qty} shares of {company} for a ${price*qty} at {price}/share")
+
     if side == 'buy':
         print(f"BUY {company} at {price}")
         print('limit_price', close_price + appro_loss[1])

@@ -103,8 +103,20 @@ class BoptimalTrader():
             symbols_to_trade = [pos.symbol for pos in self.trading_client.get_all_positions()] + list(df.Symbol)
             random.shuffle(symbols_to_trade)
             
+            market_caps = {}
+            total_market_cap = 0
+            for stock in symbols_to_trade:
+                try:
+                    info = yf.Ticker(stock).fast_info
+                    marketcap = info['market_cap']
+                    market_caps[stock] = marketcap
+                    total_market_cap += marketcap
+                except:
+                    market_caps[stock] = None
+                    
             if self.export_sentiments:
                 sentiments = parseTickerNews(symbols_to_trade, self.NARTICLES)
+                sentiments = sentiments.sort_index()
                 sentiments.to_csv('sentiments.txt', sep='\t', index=True)
             
             for symbol in symbols_to_trade:
@@ -122,13 +134,15 @@ class BoptimalTrader():
                     
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
-                        self.api.cancel_order(order.id)
-                    
-                    try:
-                        self.api.close_position(symbol)
-                    except:
-                        print(f'{symbol} - No position to close')
-                    quantity = round(self.QTY/last_quote)*abs(round(mean_sentiment['Mean Sentiment'][symbol]*10))
+                        self.api.cancel_order(order.id)            
+                    #try:
+                    #    self.api.close_position(symbol)
+                    #except:
+                    #    print(f'{symbol} - No position to close')
+            
+                    if market_caps[symbol] is None:
+                        continue
+                    quantity = round(float(account.portfolio_value)*float(market_caps[symbol])/float(total_market_cap)/float(last_price))
                     side = create_order(mean_sentiment['Mean Sentiment'][symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,quantity)
                     side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
@@ -138,7 +152,7 @@ class BoptimalTrader():
                     print(f"ERROR: Execution of trade with {symbol} failed for unknown reason")
                     print(e)
                 finally:
-                    if afterHours() and not self.crypto:
+                    if beforeHours(self.api):
                         break
                     else:
                         continue
@@ -148,6 +162,6 @@ class BoptimalTrader():
             
         print("Counts for buy, sell, hold: ", side_count)
         daysSinceStart = datetime.date.today() - datetime.date(2024,1,27)
-        plt = plotAlpaca(daysSinceStart.days) # pylint: disable=no-value-for-parameter
+        plt = plotAlpaca(dt.date(2024,1,29), self.API_KEY, self.API_SECRET) # pylint: disable=no-value-for-parameter
         plt.savefig('plot.png')
 
