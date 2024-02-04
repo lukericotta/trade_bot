@@ -133,5 +133,5 @@ def plotAlpaca(start_date, key, secret):
     return plt
 
 if __name__ == "__main__":
-    plt = plotAlpaca(dt.date(2024,1,29), 'PKMKQR4K6AHO51JD6X3S', 'TvtrNsGCRnmi1KH9zt3feQMhuitbcbU19ddndnIa') # pylint: disable=no-value-for-parameter
+    plt = plotAlpaca(dt.date(2024,2,5), 'PK0XRF78A9VVTZ1629NN', 'UjYbPU5cHufWHgOBxno1ghwoq7jHUnSbPpc3lwJg') # pylint: disable=no-value-for-parameter
     plt.show()

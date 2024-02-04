@@ -162,6 +162,6 @@ class BoptimalTrader():
             
         print("Counts for buy, sell, hold: ", side_count)
         daysSinceStart = datetime.date.today() - datetime.date(2024,1,27)
-        plt = plotAlpaca(dt.date(2024,1,29), self.API_KEY, self.API_SECRET) # pylint: disable=no-value-for-parameter
+        plt = plotAlpaca(dt.date(2024,2,5), self.API_KEY, self.API_SECRET) # pylint: disable=no-value-for-parameter
         plt.savefig('plot.png')
 
