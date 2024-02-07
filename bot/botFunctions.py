@@ -30,7 +30,7 @@ def afterHours():
     
     return False    
 
-def beforeHours(api):
+def beforeHours(api, market_caps, total_market_cap, portfolio_value):
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
     openTime = datetime.time(hour = 16, minute = 00, second = 0)
@@ -44,11 +44,11 @@ def beforeHours(api):
         return False
     # If before 1600 and after 1559
     if (now.time() < openTime) and (now.time() > preOpenTime):
-        return close_all_positions_end_of_day(api)
+        return close_all_positions_end_of_day(api, market_caps, total_market_cap, portfolio_value)
     
     return False  
         
-def close_all_positions_end_of_day(api):
+def close_all_positions_end_of_day(api, market_caps, total_market_cap, portfolio_value):
     #  First, check if the market is currently open. No point in checking if closed.
     if api.get_clock().is_open:
         #  Get the current time (New York time)
