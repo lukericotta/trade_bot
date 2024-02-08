@@ -12,6 +12,10 @@ import pandas as pd
 import requests
 import time
 
+from alpaca.trading.client import TradingClient
+from alpaca.trading.requests import MarketOrderRequest
+from alpaca.trading.enums import OrderSide
+
 def afterHours():
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
@@ -30,11 +34,11 @@ def afterHours():
     
     return False    
 
-def beforeHours(api, market_caps, total_market_cap, portfolio_value):
+def beforeHours(api, market_caps, total_market_cap, account, api_key, api_secret):
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
     openTime = datetime.time(hour = 16, minute = 00, second = 0)
-    preOpenTime = datetime.time(hour = 15, minute = 59, second = 0)
+    preOpenTime = datetime.time(hour = 15, minute = 56, second = 0)
     now = datetime.datetime.now(tz)
     # If a holiday
     if now.strftime('%Y-%m-%d') in us_holidays:
@@ -42,13 +46,13 @@ def beforeHours(api, market_caps, total_market_cap, portfolio_value):
     # If it's a weekend
     if now.date().weekday() > 4:
         return False
-    # If before 1600 and after 1559
+    # If before 1600 and after 1556
     if (now.time() < openTime) and (now.time() > preOpenTime):
-        return close_all_positions_end_of_day(api, market_caps, total_market_cap, portfolio_value)
+        return close_all_positions_end_of_day(api, market_caps, total_market_cap, account, api_key, api_secret)
     
     return False  
         
-def close_all_positions_end_of_day(api, market_caps, total_market_cap, portfolio_value):
+def close_all_positions_end_of_day(api, market_caps, total_market_cap, account, api_key, api_secret):
     #  First, check if the market is currently open. No point in checking if closed.
     if api.get_clock().is_open:
         #  Get the current time (New York time)
@@ -63,6 +67,19 @@ def close_all_positions_end_of_day(api, market_caps, total_market_cap, portfolio
             print('Closing all positions...')
             api.cancel_all_orders()
             api.close_all_positions()
+            for sym in market_caps:
+                quantity = float(market_caps[sym])/float(total_market_caps)*float(account.portfolio_value)
+                TimeInForcetrading_client = TradingClient(api_key, api_secret, paper=True)# preparing orders
+                market_order_data = MarketOrderRequest(
+                   symbol=sym,
+                   qty=quantity,
+                   side=OrderSide.BUY,
+                   time_in_force=TimeInForce.DAY
+                   )# Market order
+                market_order = trading_client.submit_order(
+                   order_data=market_order_data
+                )
+            print(market_order)
             return True
         else:
             print('Not yet 3:55pm!')
