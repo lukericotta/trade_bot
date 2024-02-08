@@ -2,6 +2,7 @@ import copy
 import datetime
 import pandas as pd
 import numpy as np
+import time
 from bs4 import BeautifulSoup as soup
 from urllib.request import Request, urlopen
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -15,6 +16,7 @@ def parseTickerNews(tickers, n):
     
     for ticker in tickers:
         # Set up scraper
+        time.sleep(1)
         url = ("http://finviz.com/quote.ashx?t=" + ticker.lower())
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         webpage = urlopen(req).read()
