@@ -5,6 +5,7 @@ do
   git pull origin
   pip install .
   bot api_configs.yaml train_configs.yaml --export > "output.txt" 2>&1
+  python bot/plotAlpaca.py
   git pull origin
   git add output.txt
   git add sentiments.txt

@@ -141,10 +141,6 @@ class BoptimalTrader():
                     open_orders = [o for o in self.api.list_orders(status='open') if o.symbol == symbol]
                     for order in open_orders:
                         self.api.cancel_order(order.id)            
-                    #try:
-                    #    self.api.close_position(symbol)
-                    #except:
-                    #    print(f'{symbol} - No position to close')
             
                     if market_caps[symbol] is None:
                         continue
@@ -158,10 +154,13 @@ class BoptimalTrader():
                     print(f"ERROR: Execution of trade with {symbol} failed for unknown reason")
                     print(e)
                 finally:
+                    print('Checking if its time to close all positions')
                     if beforeHours(self.api, market_caps, total_market_cap, account, self.API_KEY, self.API_SECRET):
-                        time.sleep(600)
+                        print('Closed all positions')
+                        time.sleep(1500)
                         break
                     else:
+                        print('Keep trading')
                         continue
         except Exception as e:
             print(f"Exception occurred: ")
