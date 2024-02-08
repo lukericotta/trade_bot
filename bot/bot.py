@@ -158,7 +158,7 @@ class BoptimalTrader():
                     print(f"ERROR: Execution of trade with {symbol} failed for unknown reason")
                     print(e)
                 finally:
-                    if beforeHours(self.api, market_caps, total_market_cap, float(account.portfolio_value)):
+                    if beforeHours(self.api, market_caps, total_market_cap, account, self.API_KEY, self.API_SECRET):
                         time.sleep(600)
                         break
                     else:
