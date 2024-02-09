@@ -1,10 +1,10 @@
-2024-02-09 15:18:43.855254: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2024-02-09 15:23:09.519525: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
 [nltk_data] Downloading package vader_lexicon to
 [nltk_data]     /home/luker/nltk_data...
 [nltk_data]   Package vader_lexicon is already up-to-date!
 Alpaca orders
                                         id  ...      source
-0     80c49470-facc-443f-a9d2-5ab301d56bbe  ...        None
+0     80c49470-facc-443f-a9d2-5ab301d56bbe  ...  access_key
 1     a8467d5d-224f-439e-8862-a5458495db78  ...  access_key
 2     6156c336-fa42-4935-900c-c769ef751501  ...  access_key
 3     6443a4f6-2d20-407b-aef2-60d407bc2302  ...  access_key
@@ -20,4 +20,4 @@ Alpaca orders
 Exception occurred: 
 local variable 'time' referenced before assignment
 Counts for buy, sell, hold:  [0, 0, 0]
-timestamp=[1707267600, 1707354000, 1707440400, 1707492185] equity=[1002880.56, 1008036.35, 1007622.25, 1008275.26] profit_loss=[2933.07, 5155.79, -414.1, 653.01] profit_loss_pct=[0.0029, 0.0051, -0.0004, 0.0006] base_value=999947.49 timeframe='1D'
+timestamp=[1707267600, 1707354000, 1707440400, 1707492455] equity=[1002880.56, 1008036.35, 1007622.25, 1008335.5] profit_loss=[2933.07, 5155.79, -414.1, 713.25] profit_loss_pct=[0.0029, 0.0051, -0.0004, 0.0007] base_value=999947.49 timeframe='1D'
