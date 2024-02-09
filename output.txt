@@ -1,4 +1,4 @@
-2024-02-09 15:36:37.792868: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2024-02-09 15:41:12.553472: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
 [nltk_data] Downloading package vader_lexicon to
 [nltk_data]     /home/luker/nltk_data...
 [nltk_data]   Package vader_lexicon is already up-to-date!
@@ -20,4 +20,4 @@ Alpaca orders
 Exception occurred: 
 local variable 'time' referenced before assignment
 Counts for buy, sell, hold:  [0, 0, 0]
-timestamp=[1707267600, 1707354000, 1707440400, 1707493268] equity=[1002880.56, 1008036.35, 1007622.25, 1008809.61] profit_loss=[2933.07, 5155.79, -414.1, 1187.36] profit_loss_pct=[0.0029, 0.0051, -0.0004, 0.0012] base_value=999947.49 timeframe='1D'
+timestamp=[1707267600, 1707354000, 1707440400, 1707493542] equity=[1002880.56, 1008036.35, 1007622.25, 1009021.31] profit_loss=[2933.07, 5155.79, -414.1, 1399.06] profit_loss_pct=[0.0029, 0.0051, -0.0004, 0.0014] base_value=999947.49 timeframe='1D'
