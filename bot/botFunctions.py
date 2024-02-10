@@ -39,7 +39,7 @@ def afterHours():
 def beforeHours(api):
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
-    openTime = datetime.time(hour = 17, minute = 00, second = 0)
+    openTime = datetime.time(hour = 16, minute = 00, second = 0)
     preOpenTime = datetime.time(hour = 15, minute = 45, second = 0)
     now = datetime.datetime.now(tz)
     # If a holiday
@@ -47,7 +47,7 @@ def beforeHours(api):
         print('Its a holiday')
         return False
     # If it's a weekend
-    if now.date().weekday() > 5:
+    if now.date().weekday() > 4:
         print('Its a weekend')
         return False
     # If before 1600 and after 1545
@@ -59,7 +59,7 @@ def beforeHours(api):
         
 def close_all_positions_end_of_day(api):
     #  First, check if the market is currently open. No point in checking if closed.
-    if not api.get_clock().is_open:
+    if api.get_clock().is_open:
         #  Get the current time (New York time)
         time_now = datetime.datetime.now(pytz.timezone('US/Eastern'))
 
