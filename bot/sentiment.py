@@ -16,13 +16,19 @@ def parseTickerNews(tickers, n):
     
     for ticker in tickers:
         # Set up scraper
-        time.sleep(1)
-        url = ("http://finviz.com/quote.ashx?t=" + ticker.lower())
-        req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        webpage = urlopen(req).read()
-        html = soup(webpage, "html.parser")
-        news_table = html.find(id='news-table')
-        news_tables[ticker] = news_table
+        result = False
+        while result is False:
+            try:
+                url = ("http://finviz.com/quote.ashx?t=" + ticker.lower())
+                req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                webpage = urlopen(req).read()
+                html = soup(webpage, "html.parser")
+                news_table = html.find(id='news-table')
+                news_tables[ticker] = news_table
+                result = True
+            except:
+                print(f'Failed to get news data for {ticker}. Trying again...')
+                pass
     
     try:
         for ticker in tickers:

@@ -269,5 +269,35 @@ def create_order(sentiment,pred_price,company,test_loss,appro_loss,time_in_force
     return side_matrix
     
 ###############################################################################
+'''
+            for sym in market_caps:
+                ticker_yahoo = yf.Ticker(sym)
+                data = ticker_yahoo.history()
+                last_quote = data['Close'].iloc[-1]
+                quantity = float(market_caps[sym])/float(total_market_cap)*float(account.portfolio_value)/float(last_quote)
+                trading_client = TradingClient(api_key, api_secret, paper=True)# preparing orders
+                market_order_data = MarketOrderRequest(
+                   symbol=sym,
+                   qty=quantity,
+                   side=OrderSide.BUY,
+                   time_in_force=TimeInForce.DAY
+                   )# Market order
+                market_order = trading_client.submit_order(
+                   order_data=market_order_data
+                )
+            print(market_order)
+'''            
+def create_market_order(company,time_in_force,orders_url,headers,qty):
+    order = {
+        'symbol':company,
+        'qty':qty,
+        'type':'market',
+        'time_in_force': time_in_force,
+        'side': 'buy'
+            }
 
-
+    print(f"Executing trade...")
+    r = requests.post(orders_url, json = order,headers = headers)
+    print(r.content)
+    
+    return True

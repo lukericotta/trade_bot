@@ -144,7 +144,7 @@ class BoptimalTrader():
             
                     if market_caps[symbol] is None:
                         continue
-                    quantity = round(float(account.portfolio_value)*float(market_caps[symbol])/float(total_market_cap)/float(last_price))
+                    quantity = float(account.portfolio_value)*float(market_caps[symbol])/float(total_market_cap)/float(last_price)
                     side = create_order(mean_sentiment['Mean Sentiment'][symbol],pred,symbol.replace('-',''),test_loss,appro_loss,self.TIME_IN_FORCE,last_price,self.ORDERS_URL,self.HEADERS,quantity)
                     side_count = list( map(add, side_count, side) )
                 except KeyboardInterrupt:
@@ -155,7 +155,13 @@ class BoptimalTrader():
                     print(e)
                 finally:
                     print('Checking if its time to close all positions')
-                    if beforeHours(self.api, market_caps, total_market_cap, account, self.API_KEY, self.API_SECRET):
+                    if beforeHours(self.api):
+                        for sym in symbols_to_trade:
+                            try:
+                                res = create_market_order(sym.replace('-',''),self.TIME_IN_FORCE,self.ORDERS_URL,self.HEADERS,quantity)
+                            except Exception as err:
+                                print(f'Could not buy ${quantity} of {sym}')
+                                print(err)
                         print('Closed all positions')
                         time.sleep(1500)
                         break
@@ -168,5 +174,5 @@ class BoptimalTrader():
             
         print("Counts for buy, sell, hold: ", side_count)
         plt = plotAlpaca(dt.date(2024,2,5), self.API_KEY, self.API_SECRET) # pylint: disable=no-value-for-parameter
-        plt.savefig('plot.png')
+        plt.savefig('daily_plot.png')
 

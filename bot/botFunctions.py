@@ -16,6 +16,7 @@ import yfinance as yf
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide
+from alpaca.trading.enums import TimeInForce
 
 def afterHours():
     tz = pytz.timezone('US/Eastern')
@@ -35,10 +36,10 @@ def afterHours():
     
     return False    
 
-def beforeHours(api, market_caps, total_market_cap, account, api_key, api_secret):
+def beforeHours(api):
     tz = pytz.timezone('US/Eastern')
     us_holidays = holidays.US()
-    openTime = datetime.time(hour = 16, minute = 00, second = 0)
+    openTime = datetime.time(hour = 17, minute = 00, second = 0)
     preOpenTime = datetime.time(hour = 15, minute = 45, second = 0)
     now = datetime.datetime.now(tz)
     # If a holiday
@@ -46,23 +47,23 @@ def beforeHours(api, market_caps, total_market_cap, account, api_key, api_secret
         print('Its a holiday')
         return False
     # If it's a weekend
-    if now.date().weekday() > 4:
+    if now.date().weekday() > 5:
         print('Its a weekend')
         return False
-    # If before 1600 and after 1546
+    # If before 1600 and after 1545
     if (now.time() < openTime) and (now.time() > preOpenTime):
         print('Closing all position EOD')
-        return close_all_positions_end_of_day(api, market_caps, total_market_cap, account, api_key, api_secret)
+        return close_all_positions_end_of_day(api)
     
     return False  
         
-def close_all_positions_end_of_day(api, market_caps, total_market_cap, account, api_key, api_secret):
+def close_all_positions_end_of_day(api):
     #  First, check if the market is currently open. No point in checking if closed.
-    if api.get_clock().is_open:
+    if not api.get_clock().is_open:
         #  Get the current time (New York time)
         time_now = datetime.datetime.now(pytz.timezone('US/Eastern'))
 
-        #  Calculate the timestamp for 5 mins before close (15:55) today.
+        #  Calculate the timestamp for 15 mins before close (15:45) today.
         five_mins_before_end_of_day = pd.Timestamp(year=time_now.year, month=time_now.month, day=time_now.day, hour=15,
                                                    minute=45, second=00, tz='US/Eastern')
 
@@ -71,22 +72,6 @@ def close_all_positions_end_of_day(api, market_caps, total_market_cap, account, 
             print('Closing all positions...')
             api.cancel_all_orders()
             api.close_all_positions()
-            for sym in market_caps:
-                ticker_yahoo = yf.Ticker(sym)
-                data = ticker_yahoo.history()
-                last_quote = data['Close'].iloc[-1]
-                quantity = float(market_caps[sym])/float(total_market_caps)*float(account.portfolio_value)/float(last_quote)
-                TimeInForcetrading_client = TradingClient(api_key, api_secret, paper=True)# preparing orders
-                market_order_data = MarketOrderRequest(
-                   symbol=sym,
-                   qty=quantity,
-                   side=OrderSide.BUY,
-                   time_in_force=TimeInForce.DAY
-                   )# Market order
-                market_order = trading_client.submit_order(
-                   order_data=market_order_data
-                )
-            print(market_order)
             return True
         else:
             print('Not yet 3:45pm!')
