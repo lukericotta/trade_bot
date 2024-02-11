@@ -173,6 +173,7 @@ class BoptimalTrader():
             print(e)
             
         print("Counts for buy, sell, hold: ", side_count)
-        plt = plotAlpaca(dt.date(2024,2,5), self.API_KEY, self.API_SECRET) # pylint: disable=no-value-for-parameter
-        plt.savefig('daily_plot.png')
+        filename = 'daily_plot.png'
+        plt = plotAlpaca(dt.date(2024,2,5), self.API_KEY, self.API_SECRET, filename) # pylint: disable=no-value-for-parameter
+        save_plot(plt, filename)
 

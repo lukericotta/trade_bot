@@ -66,7 +66,12 @@ def isHoliday(now):
     if now.strftime('%Y-%m-%d') in us_holidays:
         return True
 
-def plotAlpaca(start_date, key, secret):
+def save_plot(plt, filename):
+    plt.savefig(filename, format="png")
+    plt.show()
+    plt.close()
+
+def plotAlpaca(start_date, key, secret, filename):
     n = dt.date.today() - start_date
     n = n.days
     start = dt.datetime.now() - relativedelta(years=1)
@@ -109,7 +114,7 @@ def plotAlpaca(start_date, key, secret):
     
     plt.plot(portHistory.equity, "r-", alpha=0.5, label="Trade Bot")
     plt.plot(spList, "b-", alpha=0.5, label="S&P 500")
-    plt.show()
+    save_plot(plt, filename)
         
     dates=[dt.datetime.fromtimestamp(ts) for ts in portHistory.timestamp]
     datenums=md.date2num(dates)
@@ -118,7 +123,7 @@ def plotAlpaca(start_date, key, secret):
     ax.xaxis.set_major_formatter(xfmt)
     plt.plot(datenums,portHistory.equity, "r-", alpha=0.5, label="Trade Bot")
     plt.plot(datenums,spList, "b-", alpha=0.5, label="S&P 500")
-    plt.show()
+    save_plot(plt, filename)
     
     plt.xlabel('Time')
     plt.ylabel('Equity')
@@ -133,5 +138,6 @@ def plotAlpaca(start_date, key, secret):
     return plt
 
 if __name__ == "__main__":
-    plt = plotAlpaca(dt.date(2024,2,5), 'PK0XRF78A9VVTZ1629NN', 'UjYbPU5cHufWHgOBxno1ghwoq7jHUnSbPpc3lwJg') # pylint: disable=no-value-for-parameter
-    plt.savefig('plot.png')
+    filename = 'plot.png'
+    plt = plotAlpaca(dt.date(2024,2,5), 'PK0XRF78A9VVTZ1629NN', 'UjYbPU5cHufWHgOBxno1ghwoq7jHUnSbPpc3lwJg', filename) # pylint: disable=no-value-for-parameter
+    save_plot(plt, filename)

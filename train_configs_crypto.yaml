@@ -26,4 +26,5 @@ ToDrop:
 Years: 3
 DataLen: 1104
 Epochs: 100
-Quantity: 1
+Quantity: 20000
+Articles: 3
