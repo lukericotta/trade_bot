@@ -1,4 +1,4 @@
-2024-02-12 03:35:47.874571: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2024-02-12 03:35:53.005590: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
 Traceback (most recent call last):
   File "/home/luker/anaconda3/envs/trading_env/bin/bot", line 5, in <module>
     from bot.cli.bot import main
