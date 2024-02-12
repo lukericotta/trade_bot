@@ -1,0 +1,4 @@
+  File "bot/sentiment.py", line 109
+    parseTickerNews(['BTCUSD', 'ETHUSD', 5) # pylint: disable=no-value-for-parameter
+                                          ^
+SyntaxError: closing parenthesis ')' does not match opening parenthesis '['

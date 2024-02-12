@@ -1,23 +1,12 @@
-2024-02-09 20:59:18.444090: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
-[nltk_data] Downloading package vader_lexicon to
-[nltk_data]     /home/luker/nltk_data...
-[nltk_data]   Package vader_lexicon is already up-to-date!
-Alpaca orders
-                                        id  ...      source
-0     80c49470-facc-443f-a9d2-5ab301d56bbe  ...  access_key
-1     a8467d5d-224f-439e-8862-a5458495db78  ...  access_key
-2     6156c336-fa42-4935-900c-c769ef751501  ...  access_key
-3     6443a4f6-2d20-407b-aef2-60d407bc2302  ...  access_key
-4     dec0521e-094d-4057-947c-59b635b910d4  ...  access_key
-...                                    ...  ...         ...
-9713  3fa4a3ed-3330-4bef-b6af-ff0380ba035a  ...  access_key
-9714  c3ed928a-044c-483a-b8d7-9fe75e7f0084  ...  access_key
-9715  b5787dd4-29f8-4fa1-9457-53cdae6c8008  ...  access_key
-9716  5d4c01e2-8cd5-4640-99e2-6da021de1f6e  ...  access_key
-9717  ec01b1e8-5bfe-404b-a001-8c44e31de38e  ...  access_key
-
-[9680 rows x 34 columns]
-Exception occurred: 
-local variable 'time' referenced before assignment
-Counts for buy, sell, hold:  [0, 0, 0]
-timestamp=[1707267600, 1707354000, 1707440400, 1707512643] equity=[1002880.56, 1008036.35, 1007622.25, 1010303.56] profit_loss=[2933.07, 5155.79, -414.1, 2681.31] profit_loss_pct=[0.0029, 0.0051, -0.0004, 0.0027] base_value=999947.49 timeframe='1D'
+2024-02-12 03:35:47.874571: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "/home/luker/anaconda3/envs/trading_env/bin/bot", line 5, in <module>
+    from bot.cli.bot import main
+  File "/home/luker/anaconda3/envs/trading_env/lib/python3.8/site-packages/bot/__init__.py", line 15, in <module>
+    from .bot import BoptimalTrader
+  File "/home/luker/anaconda3/envs/trading_env/lib/python3.8/site-packages/bot/bot.py", line 9, in <module>
+    from .sentiment import *
+  File "/home/luker/anaconda3/envs/trading_env/lib/python3.8/site-packages/bot/sentiment.py", line 109
+    parseTickerNews(['BTCUSD', 'ETHUSD', 5) # pylint: disable=no-value-for-parameter
+                                          ^
+SyntaxError: closing parenthesis ')' does not match opening parenthesis '['
