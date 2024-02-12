@@ -4,8 +4,6 @@ do
   now=$EPOCHREALTIME
   git pull origin
   pip install .
-  python bot/sentiment.py > "crypto.txt" 2>&1
-  git add crypto.txt
   bot api_configs.yaml train_configs.yaml --export > "output.txt" 2>&1
   git pull origin
   git add output.txt
