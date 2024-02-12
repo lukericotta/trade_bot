@@ -106,4 +106,4 @@ def parseTickerNews(tickers, n):
     return df
     
 if __name__ == "__main__":
-    parseTickerNews(['AAPL', 'TSLA', 'AMZN'], 3) # pylint: disable=no-value-for-parameter
+    parseTickerNews(['BTCUSD', 'ETHUSD', 5) # pylint: disable=no-value-for-parameter
