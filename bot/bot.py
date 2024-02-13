@@ -158,6 +158,10 @@ class BoptimalTrader():
                     if beforeHours(self.api):
                         for sym in symbols_to_trade:
                             try:
+                                ticker_yahoo = yf.Ticker(sym)
+                                data = ticker_yahoo.history()
+                                last_quote = data['Close'].iloc[-1]
+                                float(account.portfolio_value)*float(market_caps[sym])/float(total_market_cap)/float(last_price)
                                 res = create_market_order(sym.replace('-',''),self.TIME_IN_FORCE,self.ORDERS_URL,self.HEADERS,quantity)
                             except Exception as err:
                                 print(f'Could not buy ${quantity} of {sym}')
