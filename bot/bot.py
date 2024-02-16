@@ -157,6 +157,7 @@ class BoptimalTrader():
                     print('Checking if its time to close all positions')
                     if beforeHours(self.api):
                         for sym in symbols_to_trade:
+                            continue
                             try:
                                 ticker_yahoo = yf.Ticker(sym)
                                 data = ticker_yahoo.history()
