@@ -71,10 +71,9 @@ def close_all_positions_end_of_day(api):
         if time_now.isoformat() >= five_mins_before_end_of_day.isoformat():
             print('Closing all positions...')
             api.cancel_all_orders()
-            api.close_all_positions()
             return True
         else:
-            print('Not yet 3:55pm!')
+            print('Not yet 3:59pm!')
     else:
         print('Market currently closed!')
         
